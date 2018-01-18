@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace tests\Clustering;
+namespace Phpml\Tests\Clustering;
 
 use Phpml\Clustering\FuzzyCMeans;
 use PHPUnit\Framework\TestCase;
@@ -20,11 +20,13 @@ class FuzzyCMeansTest extends TestCase
                 unset($samples[$index]);
             }
         }
+
         $this->assertCount(0, $samples);
+
         return $fcm;
     }
 
-    public function testMembershipMatrix()
+    public function testMembershipMatrix(): void
     {
         $fcm = $this->testFCMSamplesClustering();
         $clusterCount = 2;
@@ -34,6 +36,7 @@ class FuzzyCMeansTest extends TestCase
         foreach ($matrix as $row) {
             $this->assertCount($sampleCount, $row);
         }
+
         // Transpose of the matrix
         array_unshift($matrix, null);
         $matrix = call_user_func_array('array_map', $matrix);

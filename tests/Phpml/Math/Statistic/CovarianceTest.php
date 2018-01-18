@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace tests\Math\Statistic;
+namespace Phpml\Tests\Math\Statistic;
 
 use Phpml\Math\Statistic\Covariance;
 use Phpml\Math\Statistic\Mean;
@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 class CovarianceTest extends TestCase
 {
-    public function testSimpleCovariance()
+    public function testSimpleCovariance(): void
     {
         // Acceptable error
         $epsilon = 0.001;
@@ -31,7 +31,7 @@ class CovarianceTest extends TestCase
         ];
         $knownCovariance = [
             [0.616555556, 0.615444444],
-            [0.615444444, 0.716555556]];
+            [0.615444444, 0.716555556], ];
         $x = array_column($matrix, 0);
         $y = array_column($matrix, 1);
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Phpml\SupportVectorMachine;
 
+use Phpml\Exception\InvalidArgumentException;
 use Phpml\Helper\Trainable;
 
 class SupportVectorMachine
@@ -36,7 +37,7 @@ class SupportVectorMachine
     private $degree;
 
     /**
-     * @var float
+     * @var float|null
      */
     private $gamma;
 
@@ -90,24 +91,19 @@ class SupportVectorMachine
      */
     private $targets = [];
 
-    /**
-     * @param int        $type
-     * @param int        $kernel
-     * @param float      $cost
-     * @param float      $nu
-     * @param int        $degree
-     * @param float|null $gamma
-     * @param float      $coef0
-     * @param float      $epsilon
-     * @param float      $tolerance
-     * @param int        $cacheSize
-     * @param bool       $shrinking
-     * @param bool       $probabilityEstimates
-     */
     public function __construct(
-        int $type, int $kernel, float $cost = 1.0, float $nu = 0.5, int $degree = 3,
-        float $gamma = null, float $coef0 = 0.0, float $epsilon = 0.1, float $tolerance = 0.001,
-        int $cacheSize = 100, bool $shrinking = true, bool $probabilityEstimates = false
+        int $type,
+        int $kernel,
+        float $cost = 1.0,
+        float $nu = 0.5,
+        int $degree = 3,
+        ?float $gamma = null,
+        float $coef0 = 0.0,
+        float $epsilon = 0.1,
+        float $tolerance = 0.001,
+        int $cacheSize = 100,
+        bool $shrinking = true,
+        bool $probabilityEstimates = false
     ) {
         $this->type = $type;
         $this->kernel = $kernel;
@@ -128,35 +124,25 @@ class SupportVectorMachine
         $this->varPath = $rootPath.'var'.DIRECTORY_SEPARATOR;
     }
 
-    /**
-     * @param string $binPath
-     *
-     * @return $this
-     */
-    public function setBinPath(string $binPath)
+    public function setBinPath(string $binPath): void
     {
+        $this->ensureDirectorySeparator($binPath);
+        $this->verifyBinPath($binPath);
+
         $this->binPath = $binPath;
-
-        return $this;
     }
 
-    /**
-     * @param string $varPath
-     *
-     * @return $this
-     */
-    public function setVarPath(string $varPath)
+    public function setVarPath(string $varPath): void
     {
-        $this->varPath = $varPath;
+        if (!is_writable($varPath)) {
+            throw InvalidArgumentException::pathNotWritable($varPath);
+        }
 
-        return $this;
+        $this->ensureDirectorySeparator($varPath);
+        $this->varPath = $varPath;
     }
 
-    /**
-     * @param array $samples
-     * @param array $targets
-     */
-    public function train(array $samples, array $targets)
+    public function train(array $samples, array $targets): void
     {
         $this->samples = array_merge($this->samples, $samples);
         $this->targets = array_merge($this->targets, $targets);
@@ -175,18 +161,13 @@ class SupportVectorMachine
         unlink($modelFileName);
     }
 
-    /**
-     * @return string
-     */
-    public function getModel()
+    public function getModel(): string
     {
         return $this->model;
     }
 
     /**
-     * @param array $samples
-     *
-     * @return array
+     * @return array|string
      */
     public function predict(array $samples)
     {
@@ -218,10 +199,7 @@ class SupportVectorMachine
         return $predictions;
     }
 
-    /**
-     * @return string
-     */
-    private function getOSExtension()
+    private function getOSExtension(): string
     {
         $os = strtoupper(substr(PHP_OS, 0, 3));
         if ($os === 'WIN') {
@@ -233,15 +211,10 @@ class SupportVectorMachine
         return '';
     }
 
-    /**
-     * @param string $trainingSetFileName
-     * @param string $modelFileName
-     *
-     * @return string
-     */
     private function buildTrainCommand(string $trainingSetFileName, string $modelFileName): string
     {
-        return sprintf('%ssvm-train%s -s %s -t %s -c %s -n %s -d %s%s -r %s -p %s -m %s -e %s -h %d -b %d %s %s',
+        return sprintf(
+            '%ssvm-train%s -s %s -t %s -c %s -n %s -d %s%s -r %s -p %s -m %s -e %s -h %d -b %d %s %s',
             $this->binPath,
             $this->getOSExtension(),
             $this->type,
@@ -259,5 +232,31 @@ class SupportVectorMachine
             escapeshellarg($trainingSetFileName),
             escapeshellarg($modelFileName)
         );
+    }
+
+    private function ensureDirectorySeparator(string &$path): void
+    {
+        if (substr($path, -1) !== DIRECTORY_SEPARATOR) {
+            $path .= DIRECTORY_SEPARATOR;
+        }
+    }
+
+    private function verifyBinPath(string $path): void
+    {
+        if (!is_dir($path)) {
+            throw InvalidArgumentException::pathNotFound($path);
+        }
+
+        $osExtension = $this->getOSExtension();
+        foreach (['svm-predict', 'svm-scale', 'svm-train'] as $filename) {
+            $filePath = $path.$filename.$osExtension;
+            if (!file_exists($filePath)) {
+                throw InvalidArgumentException::fileNotFound($filePath);
+            }
+
+            if (!is_executable($filePath)) {
+                throw InvalidArgumentException::fileNotExecutable($filePath);
+            }
+        }
     }
 }

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace tests\Phpml\Dataset\Demo;
+namespace Phpml\Tests\Dataset\Demo;
 
 use Phpml\Dataset\Demo\IrisDataset;
 use PHPUnit\Framework\TestCase;
 
 class IrisDatasetTest extends TestCase
 {
-    public function testLoadingIrisDataset()
+    public function testLoadingIrisDataset(): void
     {
         $iris = new IrisDataset();
 

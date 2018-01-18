@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace tests\Phpml\NeuralNetwork\ActivationFunction;
+namespace Phpml\Tests\NeuralNetwork\ActivationFunction;
 
 use Phpml\NeuralNetwork\ActivationFunction\HyperbolicTangent;
 use PHPUnit\Framework\TestCase;
@@ -10,23 +10,16 @@ use PHPUnit\Framework\TestCase;
 class HyperboliTangentTest extends TestCase
 {
     /**
-     * @param $beta
-     * @param $expected
-     * @param $value
-     *
      * @dataProvider tanhProvider
      */
-    public function testHyperbolicTangentActivationFunction($beta, $expected, $value)
+    public function testHyperbolicTangentActivationFunction($beta, $expected, $value): void
     {
         $tanh = new HyperbolicTangent($beta);
 
         $this->assertEquals($expected, $tanh->compute($value), '', 0.001);
     }
 
-    /**
-     * @return array
-     */
-    public function tanhProvider()
+    public function tanhProvider(): array
     {
         return [
             [1.0, 0.761, 1],
@@ -35,6 +28,30 @@ class HyperboliTangentTest extends TestCase
             [1.0, -1, -4],
             [0.5, 0.462, 1],
             [0.3, 0, 0],
+        ];
+    }
+
+    /**
+     * @dataProvider tanhDerivativeProvider
+     */
+    public function testHyperbolicTangentDerivative($beta, $expected, $value): void
+    {
+        $tanh = new HyperbolicTangent($beta);
+        $activatedValue = $tanh->compute($value);
+        $this->assertEquals($expected, $tanh->differentiate($value, $activatedValue), '', 0.001);
+    }
+
+    public function tanhDerivativeProvider(): array
+    {
+        return [
+            [1.0, 0, -6],
+            [1.0, 0.419, -1],
+            [1.0, 1, 0],
+            [1.0, 0.419, 1],
+            [1.0, 0, 6],
+            [0.5, 0.786, 1],
+            [0.5, 0.786, -1],
+            [0.3, 1, 0],
         ];
     }
 }

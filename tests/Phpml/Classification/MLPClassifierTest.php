@@ -2,16 +2,22 @@
 
 declare(strict_types=1);
 
-namespace tests\Phpml\Classification;
+namespace Phpml\Tests\Classification;
 
 use Phpml\Classification\MLPClassifier;
-use Phpml\NeuralNetwork\Node\Neuron;
+use Phpml\Exception\InvalidArgumentException;
 use Phpml\ModelManager;
+use Phpml\NeuralNetwork\ActivationFunction;
+use Phpml\NeuralNetwork\ActivationFunction\HyperbolicTangent;
+use Phpml\NeuralNetwork\ActivationFunction\PReLU;
+use Phpml\NeuralNetwork\ActivationFunction\Sigmoid;
+use Phpml\NeuralNetwork\ActivationFunction\ThresholdedReLU;
+use Phpml\NeuralNetwork\Node\Neuron;
 use PHPUnit\Framework\TestCase;
 
 class MLPClassifierTest extends TestCase
 {
-    public function testMLPClassifierLayersInitialization()
+    public function testMLPClassifierLayersInitialization(): void
     {
         $mlp = new MLPClassifier(2, [2], [0, 1]);
 
@@ -32,7 +38,7 @@ class MLPClassifierTest extends TestCase
         $this->assertContainsOnly(Neuron::class, $layers[2]->getNodes());
     }
 
-    public function testSynapsesGeneration()
+    public function testSynapsesGeneration(): void
     {
         $mlp = new MLPClassifier(2, [2], [0, 1]);
         $layers = $mlp->getLayers();
@@ -50,7 +56,7 @@ class MLPClassifierTest extends TestCase
         }
     }
 
-    public function testBackpropagationLearning()
+    public function testBackpropagationLearning(): void
     {
         // Single layer 2 classes.
         $network = new MLPClassifier(2, [2], ['a', 'b']);
@@ -65,7 +71,7 @@ class MLPClassifierTest extends TestCase
         $this->assertEquals('b', $network->predict([0, 0]));
     }
 
-    public function testBackpropagationTrainingReset()
+    public function testBackpropagationTrainingReset(): void
     {
         // Single layer 2 classes.
         $network = new MLPClassifier(2, [2], ['a', 'b'], 1000);
@@ -86,7 +92,7 @@ class MLPClassifierTest extends TestCase
         $this->assertEquals('a', $network->predict([0, 1]));
     }
 
-    public function testBackpropagationPartialTraining()
+    public function testBackpropagationPartialTraining(): void
     {
         // Single layer 2 classes.
         $network = new MLPClassifier(2, [2], ['a', 'b'], 1000);
@@ -109,22 +115,22 @@ class MLPClassifierTest extends TestCase
         $this->assertEquals('b', $network->predict([0, 0]));
     }
 
-    public function testBackpropagationLearningMultilayer()
+    public function testBackpropagationLearningMultilayer(): void
     {
         // Multi-layer 2 classes.
-        $network = new MLPClassifier(5, [3, 2], ['a', 'b']);
+        $network = new MLPClassifier(5, [3, 2], ['a', 'b', 'c']);
         $network->train(
             [[1, 0, 0, 0, 0], [0, 1, 1, 0, 0], [1, 1, 1, 1, 1], [0, 0, 0, 0, 0]],
-            ['a', 'b', 'a', 'b']
+            ['a', 'b', 'a', 'c']
         );
 
         $this->assertEquals('a', $network->predict([1, 0, 0, 0, 0]));
         $this->assertEquals('b', $network->predict([0, 1, 1, 0, 0]));
         $this->assertEquals('a', $network->predict([1, 1, 1, 1, 1]));
-        $this->assertEquals('b', $network->predict([0, 0, 0, 0, 0]));
+        $this->assertEquals('c', $network->predict([0, 0, 0, 0, 0]));
     }
 
-    public function testBackpropagationLearningMulticlass()
+    public function testBackpropagationLearningMulticlass(): void
     {
         // Multi-layer more than 2 classes.
         $network = new MLPClassifier(5, [3, 2], ['a', 'b', 4]);
@@ -140,7 +146,34 @@ class MLPClassifierTest extends TestCase
         $this->assertEquals(4, $network->predict([0, 0, 0, 0, 0]));
     }
 
-    public function testSaveAndRestore()
+    /**
+     * @dataProvider activationFunctionsProvider
+     */
+    public function testBackpropagationActivationFunctions(ActivationFunction $activationFunction): void
+    {
+        $network = new MLPClassifier(5, [3], ['a', 'b'], 10000, $activationFunction);
+        $network->train(
+            [[1, 0, 0, 0, 0], [0, 1, 0, 0, 0], [0, 0, 1, 1, 0], [1, 1, 1, 1, 1]],
+            ['a', 'b', 'a', 'a']
+        );
+
+        $this->assertEquals('a', $network->predict([1, 0, 0, 0, 0]));
+        $this->assertEquals('b', $network->predict([0, 1, 0, 0, 0]));
+        $this->assertEquals('a', $network->predict([0, 0, 1, 1, 0]));
+        $this->assertEquals('a', $network->predict([1, 1, 1, 1, 1]));
+    }
+
+    public function activationFunctionsProvider(): array
+    {
+        return [
+            [new Sigmoid()],
+            [new HyperbolicTangent()],
+            [new PReLU()],
+            [new ThresholdedReLU()],
+        ];
+    }
+
+    public function testSaveAndRestore(): void
     {
         // Instantinate new Percetron trained for OR problem
         $samples = [[0, 0], [1, 0], [0, 1], [1, 1]];
@@ -150,7 +183,7 @@ class MLPClassifierTest extends TestCase
         $testSamples = [[0, 0], [1, 0], [0, 1], [1, 1]];
         $predicted = $classifier->predict($testSamples);
 
-        $filename = 'perceptron-test-'.rand(100, 999).'-'.uniqid();
+        $filename = 'perceptron-test-'.random_int(100, 999).'-'.uniqid();
         $filepath = tempnam(sys_get_temp_dir(), $filename);
         $modelManager = new ModelManager();
         $modelManager->saveToFile($classifier, $filepath);
@@ -160,19 +193,15 @@ class MLPClassifierTest extends TestCase
         $this->assertEquals($predicted, $restoredClassifier->predict($testSamples));
     }
 
-    /**
-     * @expectedException \Phpml\Exception\InvalidArgumentException
-     */
-    public function testThrowExceptionOnInvalidLayersNumber()
+    public function testThrowExceptionOnInvalidLayersNumber(): void
     {
+        $this->expectException(InvalidArgumentException::class);
         new MLPClassifier(2, [], [0, 1]);
     }
 
-    /**
-     * @expectedException \Phpml\Exception\InvalidArgumentException
-     */
-    public function testThrowExceptionOnInvalidPartialTrainingClasses()
+    public function testThrowExceptionOnInvalidPartialTrainingClasses(): void
     {
+        $this->expectException(InvalidArgumentException::class);
         $classifier = new MLPClassifier(2, [2], [0, 1]);
         $classifier->partialTrain(
             [[0, 1], [1, 0]],
@@ -180,19 +209,13 @@ class MLPClassifierTest extends TestCase
             [0, 1, 2]
         );
     }
-    /**
-     * @expectedException \Phpml\Exception\InvalidArgumentException
-     */
-    public function testThrowExceptionOnInvalidClassesNumber()
+
+    public function testThrowExceptionOnInvalidClassesNumber(): void
     {
+        $this->expectException(InvalidArgumentException::class);
         new MLPClassifier(2, [2], [0]);
     }
 
-    /**
-     * @param array $synapses
-     *
-     * @return array
-     */
     private function getSynapsesNodes(array $synapses): array
     {
         $nodes = [];

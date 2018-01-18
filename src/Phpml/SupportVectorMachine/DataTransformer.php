@@ -6,16 +6,11 @@ namespace Phpml\SupportVectorMachine;
 
 class DataTransformer
 {
-    /**
-     * @param array $samples
-     * @param array $labels
-     * @param bool  $targets
-     *
-     * @return string
-     */
     public static function trainingSet(array $samples, array $labels, bool $targets = false): string
     {
         $set = '';
+        $numericLabels = [];
+
         if (!$targets) {
             $numericLabels = self::numericLabels($labels);
         }
@@ -27,11 +22,6 @@ class DataTransformer
         return $set;
     }
 
-    /**
-     * @param array $samples
-     *
-     * @return string
-     */
     public static function testSet(array $samples): string
     {
         if (!is_array($samples[0])) {
@@ -46,18 +36,12 @@ class DataTransformer
         return $set;
     }
 
-    /**
-     * @param string $rawPredictions
-     * @param array  $labels
-     *
-     * @return array
-     */
     public static function predictions(string $rawPredictions, array $labels): array
     {
         $numericLabels = self::numericLabels($labels);
         $results = [];
         foreach (explode(PHP_EOL, $rawPredictions) as $result) {
-            if (strlen($result) > 0) {
+            if (isset($result[0])) {
                 $results[] = array_search($result, $numericLabels);
             }
         }
@@ -65,11 +49,6 @@ class DataTransformer
         return $results;
     }
 
-    /**
-     * @param array $labels
-     *
-     * @return array
-     */
     public static function numericLabels(array $labels): array
     {
         $numericLabels = [];
@@ -84,11 +63,6 @@ class DataTransformer
         return $numericLabels;
     }
 
-    /**
-     * @param array $sample
-     *
-     * @return string
-     */
     private static function sampleRow(array $sample): string
     {
         $row = [];

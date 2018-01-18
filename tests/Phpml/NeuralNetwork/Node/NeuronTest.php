@@ -2,16 +2,17 @@
 
 declare(strict_types=1);
 
-namespace tests\Phpml\NeuralNetwork\Node;
+namespace Phpml\Tests\NeuralNetwork\Node;
 
 use Phpml\NeuralNetwork\ActivationFunction\BinaryStep;
 use Phpml\NeuralNetwork\Node\Neuron;
 use Phpml\NeuralNetwork\Node\Neuron\Synapse;
 use PHPUnit\Framework\TestCase;
+use PHPUnit_Framework_MockObject_MockObject;
 
 class NeuronTest extends TestCase
 {
-    public function testNeuronInitialization()
+    public function testNeuronInitialization(): void
     {
         $neuron = new Neuron();
 
@@ -19,8 +20,9 @@ class NeuronTest extends TestCase
         $this->assertEquals(0.5, $neuron->getOutput());
     }
 
-    public function testNeuronActivationFunction()
+    public function testNeuronActivationFunction(): void
     {
+        /** @var BinaryStep|PHPUnit_Framework_MockObject_MockObject $activationFunction */
         $activationFunction = $this->getMockBuilder(BinaryStep::class)->getMock();
         $activationFunction->method('compute')->with(0)->willReturn($output = 0.69);
 
@@ -29,7 +31,7 @@ class NeuronTest extends TestCase
         $this->assertEquals($output, $neuron->getOutput());
     }
 
-    public function testNeuronWithSynapse()
+    public function testNeuronWithSynapse(): void
     {
         $neuron = new Neuron();
         $neuron->addSynapse($synapse = $this->getSynapseMock());
@@ -38,7 +40,7 @@ class NeuronTest extends TestCase
         $this->assertEquals(0.88, $neuron->getOutput(), '', 0.01);
     }
 
-    public function testNeuronRefresh()
+    public function testNeuronRefresh(): void
     {
         $neuron = new Neuron();
         $neuron->getOutput();
@@ -52,11 +54,9 @@ class NeuronTest extends TestCase
     }
 
     /**
-     * @param int $output
-     *
-     * @return Synapse|\PHPUnit_Framework_MockObject_MockObject
+     * @return Synapse|PHPUnit_Framework_MockObject_MockObject
      */
-    private function getSynapseMock($output = 2)
+    private function getSynapseMock(int $output = 2)
     {
         $synapse = $this->getMockBuilder(Synapse::class)->disableOriginalConstructor()->getMock();
         $synapse->method('getOutput')->willReturn($output);

@@ -4,19 +4,12 @@ declare(strict_types=1);
 
 namespace Phpml;
 
-use Phpml\Exception\SerializeException;
 use Phpml\Exception\FileException;
+use Phpml\Exception\SerializeException;
 
 class ModelManager
 {
-    /**
-     * @param Estimator $estimator
-     * @param string    $filepath
-     *
-     * @throws FileException
-     * @throws SerializeException
-     */
-    public function saveToFile(Estimator $estimator, string $filepath)
+    public function saveToFile(Estimator $estimator, string $filepath): void
     {
         if (!is_writable(dirname($filepath))) {
             throw FileException::cantSaveFile(basename($filepath));
@@ -33,15 +26,7 @@ class ModelManager
         }
     }
 
-    /**
-     * @param string $filepath
-     *
-     * @return Estimator
-     *
-     * @throws FileException
-     * @throws SerializeException
-     */
-    public function restoreFromFile(string $filepath) : Estimator
+    public function restoreFromFile(string $filepath): Estimator
     {
         if (!file_exists($filepath) || !is_readable($filepath)) {
             throw FileException::cantOpenFile(basename($filepath));

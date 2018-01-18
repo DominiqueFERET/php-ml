@@ -14,20 +14,12 @@ class Minkowski implements Distance
      */
     private $lambda;
 
-    /**
-     * @param float $lambda
-     */
     public function __construct(float $lambda = 3.0)
     {
         $this->lambda = $lambda;
     }
 
     /**
-     * @param array $a
-     * @param array $b
-     *
-     * @return float
-     *
      * @throws InvalidArgumentException
      */
     public function distance(array $a, array $b): float
@@ -43,6 +35,6 @@ class Minkowski implements Distance
             $distance += pow(abs($a[$i] - $b[$i]), $this->lambda);
         }
 
-        return (float)pow($distance, 1 / $this->lambda);
+        return (float) pow($distance, 1 / $this->lambda);
     }
 }

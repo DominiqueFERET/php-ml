@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace tests\Phpml\Math;
+namespace Phpml\Tests\Math;
 
+use Phpml\Exception\InvalidArgumentException;
+use Phpml\Exception\MatrixException;
 use Phpml\Math\Matrix;
 use PHPUnit\Framework\TestCase;
 
 class MatrixTest extends TestCase
 {
-    /**
-     * @expectedException \Phpml\Exception\InvalidArgumentException
-     */
-    public function testThrowExceptionOnInvalidMatrixSupplied()
+    public function testThrowExceptionOnInvalidMatrixSupplied(): void
     {
+        $this->expectException(InvalidArgumentException::class);
         new Matrix([[1, 2], [3]]);
     }
 
-    public function testCreateMatrixFromFlatArray()
+    public function testCreateMatrixFromFlatArray(): void
     {
         $flatArray = [1, 2, 3, 4];
         $matrix = Matrix::fromFlatArray($flatArray);
@@ -29,25 +29,21 @@ class MatrixTest extends TestCase
         $this->assertEquals($flatArray, $matrix->getColumnValues(0));
     }
 
-    /**
-     * @expectedException \Phpml\Exception\MatrixException
-     */
-    public function testThrowExceptionOnInvalidColumnNumber()
+    public function testThrowExceptionOnInvalidColumnNumber(): void
     {
+        $this->expectException(MatrixException::class);
         $matrix = new Matrix([[1, 2, 3], [4, 5, 6]]);
         $matrix->getColumnValues(4);
     }
 
-    /**
-     * @expectedException \Phpml\Exception\MatrixException
-     */
-    public function testThrowExceptionOnGetDeterminantIfArrayIsNotSquare()
+    public function testThrowExceptionOnGetDeterminantIfArrayIsNotSquare(): void
     {
+        $this->expectException(MatrixException::class);
         $matrix = new Matrix([[1, 2, 3], [4, 5, 6]]);
         $matrix->getDeterminant();
     }
 
-    public function testGetMatrixDeterminant()
+    public function testGetMatrixDeterminant(): void
     {
         //http://matrix.reshish.com/determinant.php
         $matrix = new Matrix([
@@ -68,7 +64,7 @@ class MatrixTest extends TestCase
         $this->assertEquals(1116.5035, $matrix->getDeterminant(), '', $delta = 0.0001);
     }
 
-    public function testMatrixTranspose()
+    public function testMatrixTranspose(): void
     {
         $matrix = new Matrix([
             [3, 3, 3],
@@ -85,18 +81,15 @@ class MatrixTest extends TestCase
         $this->assertEquals($transposedMatrix, $matrix->transpose()->toArray());
     }
 
-    /**
-     * @expectedException \Phpml\Exception\InvalidArgumentException
-     */
-    public function testThrowExceptionOnMultiplyWhenInconsistentMatrixSupplied()
+    public function testThrowExceptionOnMultiplyWhenInconsistentMatrixSupplied(): void
     {
+        $this->expectException(InvalidArgumentException::class);
         $matrix1 = new Matrix([[1, 2, 3], [4, 5, 6]]);
         $matrix2 = new Matrix([[3, 2, 1], [6, 5, 4]]);
-
         $matrix1->multiply($matrix2);
     }
 
-    public function testMatrixMultiplyByMatrix()
+    public function testMatrixMultiplyByMatrix(): void
     {
         $matrix1 = new Matrix([
             [1, 2, 3],
@@ -117,7 +110,7 @@ class MatrixTest extends TestCase
         $this->assertEquals($product, $matrix1->multiply($matrix2)->toArray());
     }
 
-    public function testDivideByScalar()
+    public function testDivideByScalar(): void
     {
         $matrix = new Matrix([
             [4, 6, 8],
@@ -132,30 +125,25 @@ class MatrixTest extends TestCase
         $this->assertEquals($quotient, $matrix->divideByScalar(2)->toArray());
     }
 
-    /**
-     * @expectedException \Phpml\Exception\MatrixException
-     */
-    public function testThrowExceptionWhenInverseIfArrayIsNotSquare()
+    public function testThrowExceptionWhenInverseIfArrayIsNotSquare(): void
     {
+        $this->expectException(MatrixException::class);
         $matrix = new Matrix([[1, 2, 3], [4, 5, 6]]);
         $matrix->inverse();
     }
 
-    /**
-     * @expectedException \Phpml\Exception\MatrixException
-     */
-    public function testThrowExceptionWhenInverseIfMatrixIsSingular()
+    public function testThrowExceptionWhenInverseIfMatrixIsSingular(): void
     {
+        $this->expectException(MatrixException::class);
         $matrix = new Matrix([
           [0, 0, 0],
           [0, 0, 0],
           [0, 0, 0],
        ]);
-
         $matrix->inverse();
     }
 
-    public function testInverseMatrix()
+    public function testInverseMatrix(): void
     {
         //http://ncalculators.com/matrix/inverse-matrix.htm
         $matrix = new Matrix([
@@ -173,7 +161,7 @@ class MatrixTest extends TestCase
         $this->assertEquals($inverseMatrix, $matrix->inverse()->toArray(), '', $delta = 0.0001);
     }
 
-    public function testCrossOutMatrix()
+    public function testCrossOutMatrix(): void
     {
         $matrix = new Matrix([
             [3, 4, 2],
@@ -189,14 +177,14 @@ class MatrixTest extends TestCase
         $this->assertEquals($crossOuted, $matrix->crossOut(1, 1)->toArray());
     }
 
-    public function testToScalar()
+    public function testToScalar(): void
     {
         $matrix = new Matrix([[1, 2, 3], [3, 2, 3]]);
 
         $this->assertEquals($matrix->toScalar(), 1);
     }
 
-    public function testMultiplyByScalar()
+    public function testMultiplyByScalar(): void
     {
         $matrix = new Matrix([
             [4, 6, 8],
@@ -211,7 +199,7 @@ class MatrixTest extends TestCase
         $this->assertEquals($result, $matrix->multiplyByScalar(-2)->toArray());
     }
 
-    public function testAdd()
+    public function testAdd(): void
     {
         $array1 = [1, 1, 1];
         $array2 = [2, 2, 2];
@@ -223,7 +211,7 @@ class MatrixTest extends TestCase
         $this->assertEquals($result, $m1->add($m2)->toArray()[0]);
     }
 
-    public function testSubtract()
+    public function testSubtract(): void
     {
         $array1 = [1, 1, 1];
         $array2 = [2, 2, 2];
@@ -235,22 +223,22 @@ class MatrixTest extends TestCase
         $this->assertEquals($result, $m1->subtract($m2)->toArray()[0]);
     }
 
-    public function testTransposeArray()
+    public function testTransposeArray(): void
     {
         $array = [
             [1, 1, 1],
-            [2, 2, 2]
+            [2, 2, 2],
         ];
         $transposed = [
             [1, 2],
             [1, 2],
-            [1, 2]
+            [1, 2],
         ];
 
         $this->assertEquals($transposed, Matrix::transposeArray($array));
     }
 
-    public function testDot()
+    public function testDot(): void
     {
         $vect1 = [2, 2, 2];
         $vect2 = [3, 3, 3];
@@ -261,7 +249,6 @@ class MatrixTest extends TestCase
         $matrix1 = [[1, 1], [2, 2]];
         $matrix2 = [[3, 3], [3, 3], [3, 3]];
         $dot = [6, 12];
-        
         $this->assertEquals($dot, Matrix::dot($matrix2, $matrix1));
     }
 }

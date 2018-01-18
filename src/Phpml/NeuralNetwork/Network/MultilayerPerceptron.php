@@ -5,20 +5,36 @@ declare(strict_types=1);
 namespace Phpml\NeuralNetwork\Network;
 
 use Phpml\Estimator;
-use Phpml\IncrementalEstimator;
 use Phpml\Exception\InvalidArgumentException;
-use Phpml\NeuralNetwork\Training\Backpropagation;
+use Phpml\Helper\Predictable;
+use Phpml\IncrementalEstimator;
 use Phpml\NeuralNetwork\ActivationFunction;
+use Phpml\NeuralNetwork\ActivationFunction\Sigmoid;
 use Phpml\NeuralNetwork\Layer;
 use Phpml\NeuralNetwork\Node\Bias;
 use Phpml\NeuralNetwork\Node\Input;
 use Phpml\NeuralNetwork\Node\Neuron;
 use Phpml\NeuralNetwork\Node\Neuron\Synapse;
-use Phpml\Helper\Predictable;
+use Phpml\NeuralNetwork\Training\Backpropagation;
 
 abstract class MultilayerPerceptron extends LayeredNetwork implements Estimator, IncrementalEstimator
 {
     use Predictable;
+
+    /**
+     * @var array
+     */
+    protected $classes = [];
+
+    /**
+     * @var ActivationFunction|null
+     */
+    protected $activationFunction;
+
+    /**
+     * @var Backpropagation
+     */
+    protected $backpropagation;
 
     /**
      * @var int
@@ -28,12 +44,12 @@ abstract class MultilayerPerceptron extends LayeredNetwork implements Estimator,
     /**
      * @var array
      */
-    private $hiddenLayers;
+    private $hiddenLayers = [];
 
     /**
-     * @var array
+     * @var float
      */
-    protected $classes = [];
+    private $learningRate;
 
     /**
      * @var int
@@ -41,31 +57,9 @@ abstract class MultilayerPerceptron extends LayeredNetwork implements Estimator,
     private $iterations;
 
     /**
-     * @var ActivationFunction
-     */
-    protected $activationFunction;
-
-    /**
-     * @var int
-     */
-    private $theta;
-
-    /**
-     * @var Backpropagation
-     */
-    protected $backpropagation = null;
-
-    /**
-     * @param int                     $inputLayerFeatures
-     * @param array                   $hiddenLayers
-     * @param array                   $classes
-     * @param int                     $iterations
-     * @param ActivationFunction|null $activationFunction
-     * @param int                     $theta
-     *
      * @throws InvalidArgumentException
      */
-    public function __construct(int $inputLayerFeatures, array $hiddenLayers, array $classes, int $iterations = 10000, ActivationFunction $activationFunction = null, int $theta = 1)
+    public function __construct(int $inputLayerFeatures, array $hiddenLayers, array $classes, int $iterations = 10000, ?ActivationFunction $activationFunction = null, float $learningRate = 1)
     {
         if (empty($hiddenLayers)) {
             throw InvalidArgumentException::invalidLayersNumber();
@@ -80,31 +74,12 @@ abstract class MultilayerPerceptron extends LayeredNetwork implements Estimator,
         $this->inputLayerFeatures = $inputLayerFeatures;
         $this->hiddenLayers = $hiddenLayers;
         $this->activationFunction = $activationFunction;
-        $this->theta = $theta;
+        $this->learningRate = $learningRate;
 
         $this->initNetwork();
     }
 
-    /**
-     * @return void
-     */
-    private function initNetwork()
-    {
-        $this->addInputLayer($this->inputLayerFeatures);
-        $this->addNeuronLayers($this->hiddenLayers, $this->activationFunction);
-        $this->addNeuronLayers([count($this->classes)], $this->activationFunction);
-
-        $this->addBiasNodes();
-        $this->generateSynapses();
-
-        $this->backpropagation = new Backpropagation($this->theta);
-    }
-
-    /**
-     * @param array $samples
-     * @param array $targets
-     */
-    public function train(array $samples, array $targets)
+    public function train(array $samples, array $targets): void
     {
         $this->reset();
         $this->initNetwork();
@@ -112,10 +87,9 @@ abstract class MultilayerPerceptron extends LayeredNetwork implements Estimator,
     }
 
     /**
-     * @param array $samples
-     * @param array $targets
+     * @throws InvalidArgumentException
      */
-    public function partialTrain(array $samples, array $targets, array $classes = [])
+    public function partialTrain(array $samples, array $targets, array $classes = []): void
     {
         if (!empty($classes) && array_values($classes) !== $this->classes) {
             // We require the list of classes in the constructor.
@@ -127,46 +101,55 @@ abstract class MultilayerPerceptron extends LayeredNetwork implements Estimator,
         }
     }
 
+    public function setLearningRate(float $learningRate): void
+    {
+        $this->learningRate = $learningRate;
+        $this->backpropagation->setLearningRate($this->learningRate);
+    }
+
     /**
-     * @param array $sample
      * @param mixed $target
      */
     abstract protected function trainSample(array $sample, $target);
 
     /**
-     * @param array $sample
      * @return mixed
      */
     abstract protected function predictSample(array $sample);
 
-    /**
-     * @return void
-     */
-    protected function reset()
+    protected function reset(): void
     {
         $this->removeLayers();
     }
 
-    /**
-     * @param int $nodes
-     */
-    private function addInputLayer(int $nodes)
+    private function initNetwork(): void
+    {
+        $this->addInputLayer($this->inputLayerFeatures);
+        $this->addNeuronLayers($this->hiddenLayers, $this->activationFunction);
+
+        // Sigmoid function for the output layer as we want a value from 0 to 1.
+        $sigmoid = new Sigmoid();
+        $this->addNeuronLayers([count($this->classes)], $sigmoid);
+
+        $this->addBiasNodes();
+        $this->generateSynapses();
+
+        $this->backpropagation = new Backpropagation($this->learningRate);
+    }
+
+    private function addInputLayer(int $nodes): void
     {
         $this->addLayer(new Layer($nodes, Input::class));
     }
 
-    /**
-     * @param array                   $layers
-     * @param ActivationFunction|null $activationFunction
-     */
-    private function addNeuronLayers(array $layers, ActivationFunction $activationFunction = null)
+    private function addNeuronLayers(array $layers, ?ActivationFunction $activationFunction = null): void
     {
         foreach ($layers as $neurons) {
             $this->addLayer(new Layer($neurons, Neuron::class, $activationFunction));
         }
     }
 
-    private function generateSynapses()
+    private function generateSynapses(): void
     {
         $layersNumber = count($this->layers) - 1;
         for ($i = 0; $i < $layersNumber; ++$i) {
@@ -176,7 +159,7 @@ abstract class MultilayerPerceptron extends LayeredNetwork implements Estimator,
         }
     }
 
-    private function addBiasNodes()
+    private function addBiasNodes(): void
     {
         $biasLayers = count($this->layers) - 1;
         for ($i = 0; $i < $biasLayers; ++$i) {
@@ -184,11 +167,7 @@ abstract class MultilayerPerceptron extends LayeredNetwork implements Estimator,
         }
     }
 
-    /**
-     * @param Layer $nextLayer
-     * @param Layer $currentLayer
-     */
-    private function generateLayerSynapses(Layer $nextLayer, Layer $currentLayer)
+    private function generateLayerSynapses(Layer $nextLayer, Layer $currentLayer): void
     {
         foreach ($nextLayer->getNodes() as $nextNeuron) {
             if ($nextNeuron instanceof Neuron) {
@@ -197,22 +176,14 @@ abstract class MultilayerPerceptron extends LayeredNetwork implements Estimator,
         }
     }
 
-    /**
-     * @param Layer  $currentLayer
-     * @param Neuron $nextNeuron
-     */
-    private function generateNeuronSynapses(Layer $currentLayer, Neuron $nextNeuron)
+    private function generateNeuronSynapses(Layer $currentLayer, Neuron $nextNeuron): void
     {
         foreach ($currentLayer->getNodes() as $currentNeuron) {
             $nextNeuron->addSynapse(new Synapse($currentNeuron));
         }
     }
 
-    /**
-     * @param array $samples
-     * @param array $targets
-     */
-    private function trainSamples(array $samples, array $targets)
+    private function trainSamples(array $samples, array $targets): void
     {
         foreach ($targets as $key => $target) {
             $this->trainSample($samples[$key], $target);

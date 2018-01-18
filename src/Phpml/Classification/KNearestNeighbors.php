@@ -24,12 +24,11 @@ class KNearestNeighbors implements Classifier
     private $distanceMetric;
 
     /**
-     * @param int           $k
      * @param Distance|null $distanceMetric (if null then Euclidean distance as default)
      */
-    public function __construct(int $k = 3, Distance $distanceMetric = null)
+    public function __construct(int $k = 3, ?Distance $distanceMetric = null)
     {
-        if (null === $distanceMetric) {
+        if ($distanceMetric === null) {
             $distanceMetric = new Euclidean();
         }
 
@@ -40,8 +39,6 @@ class KNearestNeighbors implements Classifier
     }
 
     /**
-     * @param array $sample
-     *
      * @return mixed
      */
     protected function predictSample(array $sample)
@@ -61,13 +58,9 @@ class KNearestNeighbors implements Classifier
     }
 
     /**
-     * @param array $sample
-     *
-     * @return array
-     *
      * @throws \Phpml\Exception\InvalidArgumentException
      */
-    private function kNeighborsDistances(array $sample)
+    private function kNeighborsDistances(array $sample): array
     {
         $distances = [];
 

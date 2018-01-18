@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace tests\Classification;
+namespace Phpml\Tests\Classification;
 
 use Phpml\Classification\NaiveBayes;
 use Phpml\ModelManager;
@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 class NaiveBayesTest extends TestCase
 {
-    public function testPredictSingleSample()
+    public function testPredictSingleSample(): void
     {
         $samples = [[5, 1, 1], [1, 5, 1], [1, 1, 5]];
         $labels = ['a', 'b', 'c'];
@@ -23,7 +23,7 @@ class NaiveBayesTest extends TestCase
         $this->assertEquals('c', $classifier->predict([1, 1, 6]));
     }
 
-    public function testPredictArrayOfSamples()
+    public function testPredictArrayOfSamples(): void
     {
         $trainSamples = [[5, 1, 1], [1, 5, 1], [1, 1, 5]];
         $trainLabels = ['a', 'b', 'c'];
@@ -47,7 +47,7 @@ class NaiveBayesTest extends TestCase
         $this->assertEquals($testLabels, $classifier->predict($testSamples));
     }
 
-    public function testSaveAndRestore()
+    public function testSaveAndRestore(): void
     {
         $trainSamples = [[5, 1, 1], [1, 5, 1], [1, 1, 5]];
         $trainLabels = ['a', 'b', 'c'];
@@ -59,7 +59,7 @@ class NaiveBayesTest extends TestCase
         $classifier->train($trainSamples, $trainLabels);
         $predicted = $classifier->predict($testSamples);
 
-        $filename = 'naive-bayes-test-'.rand(100, 999).'-'.uniqid();
+        $filename = 'naive-bayes-test-'.random_int(100, 999).'-'.uniqid();
         $filepath = tempnam(sys_get_temp_dir(), $filename);
         $modelManager = new ModelManager();
         $modelManager->saveToFile($classifier, $filepath);

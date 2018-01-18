@@ -4,112 +4,100 @@ declare(strict_types=1);
 
 namespace Phpml\Exception;
 
-class InvalidArgumentException extends \Exception
+use Exception;
+
+class InvalidArgumentException extends Exception
 {
-    /**
-     * @return InvalidArgumentException
-     */
-    public static function arraySizeNotMatch()
+    public static function arraySizeNotMatch(): self
     {
         return new self('Size of given arrays does not match');
     }
 
-    /**
-     * @param $name
-     *
-     * @return InvalidArgumentException
-     */
-    public static function percentNotInRange($name)
+    public static function percentNotInRange($name): self
     {
         return new self(sprintf('%s must be between 0.0 and 1.0', $name));
     }
 
-    /**
-     * @return InvalidArgumentException
-     */
-    public static function arrayCantBeEmpty()
+    public static function arrayCantBeEmpty(): self
     {
         return new self('The array has zero elements');
     }
 
-    /**
-     * @param int $minimumSize
-     *
-     * @return InvalidArgumentException
-     */
-    public static function arraySizeToSmall($minimumSize = 2)
+    public static function arraySizeToSmall(int $minimumSize = 2): self
     {
-        return new self(sprintf('The array must have at least %s elements', $minimumSize));
+        return new self(sprintf('The array must have at least %d elements', $minimumSize));
     }
 
-    /**
-     * @return InvalidArgumentException
-     */
-    public static function matrixDimensionsDidNotMatch()
+    public static function matrixDimensionsDidNotMatch(): self
     {
         return new self('Matrix dimensions did not match');
     }
 
-    /**
-     * @return InvalidArgumentException
-     */
-    public static function inconsistentMatrixSupplied()
+    public static function inconsistentMatrixSupplied(): self
     {
         return new self('Inconsistent matrix supplied');
     }
 
-    /**
-     * @return InvalidArgumentException
-     */
-    public static function invalidClustersNumber()
+    public static function invalidClustersNumber(): self
     {
         return new self('Invalid clusters number');
     }
 
     /**
-     * @return InvalidArgumentException
+     * @param mixed $target
      */
-    public static function invalidTarget($target)
+    public static function invalidTarget($target): self
     {
-        return new self('Target with value ' . $target . ' is not part of the accepted classes');
+        return new self(sprintf('Target with value "%s" is not part of the accepted classes', $target));
     }
 
-    /**
-     * @param string $language
-     *
-     * @return InvalidArgumentException
-     */
-    public static function invalidStopWordsLanguage(string $language)
+    public static function invalidStopWordsLanguage(string $language): self
     {
-        return new self(sprintf('Can\'t find %s language for StopWords', $language));
+        return new self(sprintf('Can\'t find "%s" language for StopWords', $language));
     }
 
-    /**
-     * @return InvalidArgumentException
-     */
-    public static function invalidLayerNodeClass()
+    public static function invalidLayerNodeClass(): self
     {
         return new self('Layer node class must implement Node interface');
     }
 
-    /**
-     * @return InvalidArgumentException
-     */
-    public static function invalidLayersNumber()
+    public static function invalidLayersNumber(): self
     {
         return new self('Provide at least 1 hidden layer');
     }
 
-    /**
-     * @return InvalidArgumentException
-     */
-    public static function invalidClassesNumber()
+    public static function invalidClassesNumber(): self
     {
         return new self('Provide at least 2 different classes');
     }
 
-    public static function inconsistentClasses()
+    public static function inconsistentClasses(): self
     {
         return new self('The provided classes don\'t match the classes provided in the constructor');
+    }
+
+    public static function fileNotFound(string $file): self
+    {
+        return new self(sprintf('File "%s" not found', $file));
+    }
+
+    public static function fileNotExecutable(string $file): self
+    {
+        return new self(sprintf('File "%s" is not executable', $file));
+    }
+
+    public static function pathNotFound(string $path): self
+    {
+        return new self(sprintf('The specified path "%s" does not exist', $path));
+    }
+
+    public static function pathNotWritable(string $path): self
+    {
+        return new self(sprintf('The specified path "%s" is not writable', $path));
+    }
+
+    public static function invalidOperator(string $operator): self
+    {
+        return new self(sprintf('Invalid operator "%s" provided', $operator));
     }
 }

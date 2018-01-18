@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace tests\DimensionReduction;
+namespace Phpml\Tests\DimensionReduction;
 
-use Phpml\DimensionReduction\LDA;
 use Phpml\Dataset\Demo\IrisDataset;
+use Phpml\DimensionReduction\LDA;
 use PHPUnit\Framework\TestCase;
 
 class LDATest extends TestCase
 {
-    public function testLDA()
+    public function testLDA(): void
     {
         // Acceptable error
         $epsilon = 0.001;
@@ -28,7 +28,7 @@ class LDATest extends TestCase
             [4.7, 3.2, 1.3, 0.2],
             [6.5, 3.0, 5.2, 2.0],
             [6.2, 3.4, 5.4, 2.3],
-            [5.9, 3.0, 5.1, 1.8]
+            [5.9, 3.0, 5.1, 1.8],
         ];
         $transformed2 = [
             [-1.4922092756753, 1.9047102045574],
@@ -36,14 +36,14 @@ class LDATest extends TestCase
             [-1.3487505965419, 1.749846351699],
             [1.7759343101456, 2.0371552314006],
             [2.0059819019159, 2.4493123003226],
-            [1.701474913008, 1.9037880473772]
+            [1.701474913008, 1.9037880473772],
         ];
 
         $control = [];
         $control = array_merge($control, array_slice($transformed, 0, 3));
         $control = array_merge($control, array_slice($transformed, -3));
 
-        $check = function ($row1, $row2) use ($epsilon) {
+        $check = function ($row1, $row2) use ($epsilon): void {
             // Due to the fact that the sign of values can be flipped
             // during the calculation of eigenValues, we have to compare
             // absolute value of the values
@@ -57,7 +57,7 @@ class LDATest extends TestCase
         // for each projected row
         foreach ($data as $i => $row) {
             $newRow = [$transformed2[$i]];
-            $newRow2= $lda->transform($row);
+            $newRow2 = $lda->transform($row);
 
             array_map($check, $newRow, $newRow2);
         }

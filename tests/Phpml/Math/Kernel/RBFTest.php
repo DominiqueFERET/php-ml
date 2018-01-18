@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace test\Phpml\Math\Kernel;
+namespace Phpml\Tests\Math\Kernel;
 
 use Phpml\Math\Kernel\RBF;
 use PHPUnit\Framework\TestCase;
 
 class RBFTest extends TestCase
 {
-    public function testComputeRBFKernelFunction()
+    public function testComputeRBFKernelFunction(): void
     {
         $rbf = new RBF($gamma = 0.001);
 

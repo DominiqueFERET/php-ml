@@ -2,18 +2,19 @@
 
 declare(strict_types=1);
 
-namespace tests;
+namespace Phpml\Tests;
 
+use Phpml\Exception\FileException;
 use Phpml\ModelManager;
 use Phpml\Regression\LeastSquares;
 use PHPUnit\Framework\TestCase;
 
 class ModelManagerTest extends TestCase
 {
-    public function testSaveAndRestore()
+    public function testSaveAndRestore(): void
     {
         $filename = uniqid();
-        $filepath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $filename;
+        $filepath = sys_get_temp_dir().DIRECTORY_SEPARATOR.$filename;
 
         $estimator = new LeastSquares();
         $modelManager = new ModelManager();
@@ -23,12 +24,10 @@ class ModelManagerTest extends TestCase
         $this->assertEquals($estimator, $restored);
     }
 
-    /**
-     * @expectedException \Phpml\Exception\FileException
-     */
-    public function testRestoreWrongFile()
+    public function testRestoreWrongFile(): void
     {
-        $filepath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'unexisting';
+        $this->expectException(FileException::class);
+        $filepath = sys_get_temp_dir().DIRECTORY_SEPARATOR.'unexisting';
         $modelManager = new ModelManager();
         $modelManager->restoreFromFile($filepath);
     }

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace tests\DimensionReduction;
+namespace Phpml\Tests\DimensionReduction;
 
 use Phpml\DimensionReduction\PCA;
 use PHPUnit\Framework\TestCase;
 
 class PCATest extends TestCase
 {
-    public function testPCA()
+    public function testPCA(): void
     {
         // Acceptable error
         $epsilon = 0.001;
@@ -26,12 +26,12 @@ class PCATest extends TestCase
             [2.0, 1.6],
             [1.0, 1.1],
             [1.5, 1.6],
-            [1.1, 0.9]
+            [1.1, 0.9],
         ];
         $transformed = [
             [-0.827970186], [1.77758033], [-0.992197494],
             [-0.274210416], [-1.67580142], [-0.912949103], [0.0991094375],
-            [1.14457216], [0.438046137], [1.22382056]];
+            [1.14457216], [0.438046137], [1.22382056], ];
 
         $pca = new PCA(0.90);
         $reducedData = $pca->fit($data);
@@ -39,7 +39,7 @@ class PCATest extends TestCase
         // Due to the fact that the sign of values can be flipped
         // during the calculation of eigenValues, we have to compare
         // absolute value of the values
-        array_map(function ($val1, $val2) use ($epsilon) {
+        array_map(function ($val1, $val2) use ($epsilon): void {
             $this->assertEquals(abs($val1), abs($val2), '', $epsilon);
         }, $transformed, $reducedData);
 
@@ -47,9 +47,9 @@ class PCATest extends TestCase
         // same dimensionality with the original dataset
         foreach ($data as $i => $row) {
             $newRow = [[$transformed[$i]]];
-            $newRow2= $pca->transform($row);
+            $newRow2 = $pca->transform($row);
 
-            array_map(function ($val1, $val2) use ($epsilon) {
+            array_map(function ($val1, $val2) use ($epsilon): void {
                 $this->assertEquals(abs($val1), abs($val2), '', $epsilon);
             }, $newRow, $newRow2);
         }

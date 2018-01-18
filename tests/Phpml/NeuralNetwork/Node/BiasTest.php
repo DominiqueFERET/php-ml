@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace tests\Phpml\NeuralNetwork\Node;
+namespace Phpml\Tests\NeuralNetwork\Node;
 
 use Phpml\NeuralNetwork\Node\Bias;
 use PHPUnit\Framework\TestCase;
 
 class BiasTest extends TestCase
 {
-    public function testBiasOutput()
+    public function testBiasOutput(): void
     {
         $bias = new Bias();
 

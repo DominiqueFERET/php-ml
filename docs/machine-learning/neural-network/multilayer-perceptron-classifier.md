@@ -8,7 +8,7 @@ A multilayer perceptron (MLP) is a feedforward artificial neural network model t
 * $hiddenLayers (array) - array with the hidden layers configuration, each value represent number of neurons in each layers
 * $classes (array) - array with the different training set classes (array keys are ignored)
 * $iterations (int) - number of training iterations
-* $theta (int) - network theta parameter
+* $learningRate (float) - the learning rate
 * $activationFunction (ActivationFunction) - neuron activation function
 
 ```
@@ -45,6 +45,12 @@ $mlp->partialTrain(
 
 ```
 
+You can update the learning rate between partialTrain runs:
+
+```
+$mlp->setLearningRate(0.1);
+```
+
 ## Predict
 
 To predict sample label use predict method. You can provide one sample or array of samples:
@@ -60,4 +66,6 @@ $mlp->predict([[1, 1, 1, 1], [0, 0, 0, 0]]);
 * BinaryStep
 * Gaussian
 * HyperbolicTangent
+* Parametric Rectified Linear Unit
 * Sigmoid (default)
+* Thresholded Rectified Linear Unit

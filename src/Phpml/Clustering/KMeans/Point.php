@@ -16,32 +16,23 @@ class Point implements ArrayAccess
     /**
      * @var array
      */
-    protected $coordinates;
+    protected $coordinates = [];
 
-    /**
-     * @param array $coordinates
-     */
     public function __construct(array $coordinates)
     {
         $this->dimension = count($coordinates);
         $this->coordinates = $coordinates;
     }
 
-    /**
-     * @return array
-     */
-    public function toArray()
+    public function toArray(): array
     {
         return $this->coordinates;
     }
 
     /**
-     * @param Point $point
-     * @param bool  $precise
-     *
      * @return int|mixed
      */
-    public function getDistanceWith(self $point, $precise = true)
+    public function getDistanceWith(self $point, bool $precise = true)
     {
         $distance = 0;
         for ($n = 0; $n < $this->dimension; ++$n) {
@@ -53,18 +44,19 @@ class Point implements ArrayAccess
     }
 
     /**
-     * @param array $points
-     *
      * @return mixed
      */
     public function getClosest(array $points)
     {
+        $minPoint = null;
+
         foreach ($points as $point) {
             $distance = $this->getDistanceWith($point, false);
 
             if (!isset($minDistance)) {
                 $minDistance = $distance;
                 $minPoint = $point;
+
                 continue;
             }
 
@@ -77,20 +69,15 @@ class Point implements ArrayAccess
         return $minPoint;
     }
 
-    /**
-     * @return array
-     */
-    public function getCoordinates()
+    public function getCoordinates(): array
     {
         return $this->coordinates;
     }
 
     /**
      * @param mixed $offset
-     *
-     * @return bool
      */
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return isset($this->coordinates[$offset]);
     }
@@ -109,7 +96,7 @@ class Point implements ArrayAccess
      * @param mixed $offset
      * @param mixed $value
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         $this->coordinates[$offset] = $value;
     }
@@ -117,7 +104,7 @@ class Point implements ArrayAccess
     /**
      * @param mixed $offset
      */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         unset($this->coordinates[$offset]);
     }

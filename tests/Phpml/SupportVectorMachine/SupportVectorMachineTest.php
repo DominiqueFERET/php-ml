@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace tests\SupportVectorMachine;
+namespace Phpml\Tests\SupportVectorMachine;
 
+use Phpml\Exception\InvalidArgumentException;
 use Phpml\SupportVectorMachine\Kernel;
 use Phpml\SupportVectorMachine\SupportVectorMachine;
 use Phpml\SupportVectorMachine\Type;
@@ -11,7 +12,7 @@ use PHPUnit\Framework\TestCase;
 
 class SupportVectorMachineTest extends TestCase
 {
-    public function testTrainCSVCModelWithLinearKernel()
+    public function testTrainCSVCModelWithLinearKernel(): void
     {
         $samples = [[1, 3], [1, 4], [2, 4], [3, 1], [4, 1], [4, 2]];
         $labels = ['a', 'a', 'a', 'b', 'b', 'b'];
@@ -35,7 +36,7 @@ SV
         $this->assertEquals($model, $svm->getModel());
     }
 
-    public function testPredictSampleWithLinearKernel()
+    public function testPredictSampleWithLinearKernel(): void
     {
         $samples = [[1, 3], [1, 4], [2, 4], [3, 1], [4, 1], [4, 2]];
         $labels = ['a', 'a', 'a', 'b', 'b', 'b'];
@@ -54,7 +55,7 @@ SV
         $this->assertEquals('b', $predictions[2]);
     }
 
-    public function testPredictSampleFromMultipleClassWithRbfKernel()
+    public function testPredictSampleFromMultipleClassWithRbfKernel(): void
     {
         $samples = [
             [1, 3], [1, 4], [1, 4],
@@ -79,5 +80,29 @@ SV
         $this->assertEquals('a', $predictions[0]);
         $this->assertEquals('b', $predictions[1]);
         $this->assertEquals('c', $predictions[2]);
+    }
+
+    public function testThrowExceptionWhenVarPathIsNotWritable(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('is not writable');
+        $svm = new SupportVectorMachine(Type::C_SVC, Kernel::RBF);
+        $svm->setVarPath('var-path');
+    }
+
+    public function testThrowExceptionWhenBinPathDoesNotExist(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('does not exist');
+        $svm = new SupportVectorMachine(Type::C_SVC, Kernel::RBF);
+        $svm->setBinPath('bin-path');
+    }
+
+    public function testThrowExceptionWhenFileIsNotFoundInBinPath(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('not found');
+        $svm = new SupportVectorMachine(Type::C_SVC, Kernel::RBF);
+        $svm->setBinPath('var');
     }
 }

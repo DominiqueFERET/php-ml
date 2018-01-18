@@ -8,11 +8,6 @@ use Phpml\Exception\DatasetException;
 
 class FilesDataset extends ArrayDataset
 {
-    /**
-     * @param string $rootPath
-     *
-     * @throws DatasetException
-     */
     public function __construct(string $rootPath)
     {
         if (!is_dir($rootPath)) {
@@ -22,20 +17,14 @@ class FilesDataset extends ArrayDataset
         $this->scanRootPath($rootPath);
     }
 
-    /**
-     * @param string $rootPath
-     */
-    private function scanRootPath(string $rootPath)
+    private function scanRootPath(string $rootPath): void
     {
         foreach (glob($rootPath.DIRECTORY_SEPARATOR.'*', GLOB_ONLYDIR) as $dir) {
             $this->scanDir($dir);
         }
     }
 
-    /**
-     * @param string $dir
-     */
-    private function scanDir(string $dir)
+    private function scanDir(string $dir): void
     {
         $target = basename($dir);
 

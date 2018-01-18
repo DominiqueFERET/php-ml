@@ -2,15 +2,16 @@
 
 declare(strict_types=1);
 
-namespace tests\Phpml\NeuralNetwork\Node\Neuron;
+namespace Phpml\Tests\NeuralNetwork\Node\Neuron;
 
-use Phpml\NeuralNetwork\Node\Neuron\Synapse;
 use Phpml\NeuralNetwork\Node\Neuron;
+use Phpml\NeuralNetwork\Node\Neuron\Synapse;
 use PHPUnit\Framework\TestCase;
+use PHPUnit_Framework_MockObject_MockObject;
 
 class SynapseTest extends TestCase
 {
-    public function testSynapseInitialization()
+    public function testSynapseInitialization(): void
     {
         $node = $this->getNodeMock($nodeOutput = 0.5);
 
@@ -25,7 +26,7 @@ class SynapseTest extends TestCase
         $this->assertInternalType('float', $synapse->getWeight());
     }
 
-    public function testSynapseWeightChange()
+    public function testSynapseWeightChange(): void
     {
         $node = $this->getNodeMock();
         $synapse = new Synapse($node, $weight = 0.75);
@@ -39,9 +40,9 @@ class SynapseTest extends TestCase
     }
 
     /**
-     * @param int $output
+     * @param int|float $output
      *
-     * @return \PHPUnit_Framework_MockObject_MockObject
+     * @return Neuron|PHPUnit_Framework_MockObject_MockObject
      */
     private function getNodeMock($output = 1)
     {

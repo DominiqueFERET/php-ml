@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace tests\Phpml\FeatureExtraction;
+namespace Phpml\Tests\FeatureExtraction;
 
 use Phpml\FeatureExtraction\StopWords;
 use Phpml\FeatureExtraction\TokenCountVectorizer;
@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 
 class TokenCountVectorizerTest extends TestCase
 {
-    public function testTransformationWithWhitespaceTokenizer()
+    public function testTransformationWithWhitespaceTokenizer(): void
     {
         $samples = [
             'Lorem ipsum dolor sit amet dolor',
@@ -33,9 +33,42 @@ class TokenCountVectorizerTest extends TestCase
         ];
 
         $tokensCounts = [
-            [0 => 1, 1 => 1, 2 => 2, 3 => 1, 4 => 1, 5 => 0, 6 => 0, 7 => 0, 8 => 0, 9 => 0],
-            [0 => 0, 1 => 1, 2 => 1, 3 => 0, 4 => 0, 5 => 1, 6 => 1, 7 => 0, 8 => 0, 9 => 0],
-            [0 => 0, 1 => 0, 2 => 0, 3 => 0, 4 => 0, 5 => 1, 6 => 0, 7 => 2, 8 => 1, 9 => 1],
+            [
+                0 => 1,
+                1 => 1,
+                2 => 2,
+                3 => 1,
+                4 => 1,
+                5 => 0,
+                6 => 0,
+                7 => 0,
+                8 => 0,
+                9 => 0,
+            ],
+            [
+                0 => 0,
+                1 => 1,
+                2 => 1,
+                3 => 0,
+                4 => 0,
+                5 => 1,
+                6 => 1,
+                7 => 0,
+                8 => 0,
+                9 => 0,
+            ],
+            [
+                0 => 0,
+                1 => 0,
+                2 => 0,
+                3 => 0,
+                4 => 0,
+                5 => 1,
+                6 => 0,
+                7 => 2,
+                8 => 1,
+                9 => 1,
+            ],
         ];
 
         $vectorizer = new TokenCountVectorizer(new WhitespaceTokenizer());
@@ -47,7 +80,7 @@ class TokenCountVectorizerTest extends TestCase
         $this->assertSame($tokensCounts, $samples);
     }
 
-    public function testTransformationWithMinimumDocumentTokenCountFrequency()
+    public function testTransformationWithMinimumDocumentTokenCountFrequency(): void
     {
         // word at least in half samples
         $samples = [
@@ -66,10 +99,34 @@ class TokenCountVectorizerTest extends TestCase
         ];
 
         $tokensCounts = [
-            [0 => 1, 1 => 1, 2 => 0, 3 => 1, 4 => 1],
-            [0 => 1, 1 => 1, 2 => 0, 3 => 1, 4 => 1],
-            [0 => 0, 1 => 1, 2 => 0, 3 => 1, 4 => 1],
-            [0 => 0, 1 => 1, 2 => 0, 3 => 1, 4 => 1],
+            [
+                0 => 1,
+                1 => 1,
+                2 => 0,
+                3 => 1,
+                4 => 1,
+            ],
+            [
+                0 => 1,
+                1 => 1,
+                2 => 0,
+                3 => 1,
+                4 => 1,
+            ],
+            [
+                0 => 0,
+                1 => 1,
+                2 => 0,
+                3 => 1,
+                4 => 1,
+            ],
+            [
+                0 => 0,
+                1 => 1,
+                2 => 0,
+                3 => 1,
+                4 => 1,
+            ],
         ];
 
         $vectorizer = new TokenCountVectorizer(new WhitespaceTokenizer(), null, 0.5);
@@ -88,9 +145,39 @@ class TokenCountVectorizerTest extends TestCase
         ];
 
         $tokensCounts = [
-            [0 => 1, 1 => 0, 2 => 0, 3 => 0, 4 => 0, 5 => 0, 6 => 0, 7 => 0, 8 => 0],
-            [0 => 1, 1 => 0, 2 => 0, 3 => 0, 4 => 0, 5 => 0, 6 => 0, 7 => 0, 8 => 0],
-            [0 => 1, 1 => 0, 2 => 0, 3 => 0, 4 => 0, 5 => 0, 6 => 0, 7 => 0, 8 => 0],
+            [
+                0 => 1,
+                1 => 0,
+                2 => 0,
+                3 => 0,
+                4 => 0,
+                5 => 0,
+                6 => 0,
+                7 => 0,
+                8 => 0,
+            ],
+            [
+                0 => 1,
+                1 => 0,
+                2 => 0,
+                3 => 0,
+                4 => 0,
+                5 => 0,
+                6 => 0,
+                7 => 0,
+                8 => 0,
+            ],
+            [
+                0 => 1,
+                1 => 0,
+                2 => 0,
+                3 => 0,
+                4 => 0,
+                5 => 0,
+                6 => 0,
+                7 => 0,
+                8 => 0,
+            ],
         ];
 
         $vectorizer = new TokenCountVectorizer(new WhitespaceTokenizer(), null, 1);
@@ -100,7 +187,7 @@ class TokenCountVectorizerTest extends TestCase
         $this->assertSame($tokensCounts, $samples);
     }
 
-    public function testTransformationWithStopWords()
+    public function testTransformationWithStopWords(): void
     {
         $samples = [
             'Lorem ipsum dolor sit amet dolor',
@@ -124,9 +211,36 @@ class TokenCountVectorizerTest extends TestCase
         ];
 
         $tokensCounts = [
-            [0 => 1, 1 => 1, 2 => 1, 3 => 1, 4 => 0, 5 => 0, 6 => 0, 7 => 0],
-            [0 => 0, 1 => 1, 2 => 0, 3 => 0, 4 => 1, 5 => 1, 6 => 0, 7 => 0],
-            [0 => 0, 1 => 0, 2 => 0, 3 => 0, 4 => 1, 5 => 0, 6 => 1, 7 => 1],
+            [
+                0 => 1,
+                1 => 1,
+                2 => 1,
+                3 => 1,
+                4 => 0,
+                5 => 0,
+                6 => 0,
+                7 => 0,
+            ],
+            [
+                0 => 0,
+                1 => 1,
+                2 => 0,
+                3 => 0,
+                4 => 1,
+                5 => 1,
+                6 => 0,
+                7 => 0,
+            ],
+            [
+                0 => 0,
+                1 => 0,
+                2 => 0,
+                3 => 0,
+                4 => 1,
+                5 => 0,
+                6 => 1,
+                7 => 1,
+            ],
         ];
 
         $vectorizer = new TokenCountVectorizer(new WhitespaceTokenizer(), $stopWords);

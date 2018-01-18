@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace tests\Classification\Linear;
+namespace Phpml\Tests\Classification\Linear;
 
 use Phpml\Classification\Linear\Perceptron;
 use Phpml\ModelManager;
@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 class PerceptronTest extends TestCase
 {
-    public function testPredictSingleSample()
+    public function testPredictSingleSample(): void
     {
         // AND problem
         $samples = [[0, 0], [1, 0], [0, 1], [1, 1], [0.6, 0.6]];
@@ -37,7 +37,7 @@ class PerceptronTest extends TestCase
         $samples = [
             [0, 0], [0, 1], [1, 0], [1, 1], // First group : a cluster at bottom-left corner in 2D
             [5, 5], [6, 5], [5, 6], [7, 5], // Second group: another cluster at the middle-right
-            [3, 10],[3, 10],[3, 8], [3, 9]  // Third group : cluster at the top-middle
+            [3, 10], [3, 10], [3, 8], [3, 9],  // Third group : cluster at the top-middle
         ];
         $targets = [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2];
 
@@ -58,7 +58,7 @@ class PerceptronTest extends TestCase
         $samples = [
             [0, 0], [0, 1], [1, 0], [1, 1], // First group : a cluster at bottom-left corner in 2D
             [5, 5], [6, 5], [5, 6], [7, 5], // Second group: another cluster at the middle-right
-            [3, 10],[3, 10],[3, 8], [3, 9]  // Third group : cluster at the top-middle
+            [3, 10], [3, 10], [3, 8], [3, 9],  // Third group : cluster at the top-middle
         ];
         $targets = [2, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1];
         $classifier->train($samples, $targets);
@@ -67,7 +67,7 @@ class PerceptronTest extends TestCase
         $this->assertEquals(1, $classifier->predict([3.0, 9.5]));
     }
 
-    public function testSaveAndRestore()
+    public function testSaveAndRestore(): void
     {
         // Instantinate new Percetron trained for OR problem
         $samples = [[0, 0], [1, 0], [0, 1], [1, 1]];
@@ -77,7 +77,7 @@ class PerceptronTest extends TestCase
         $testSamples = [[0, 1], [1, 1], [0.2, 0.1]];
         $predicted = $classifier->predict($testSamples);
 
-        $filename = 'perceptron-test-'.rand(100, 999).'-'.uniqid();
+        $filename = 'perceptron-test-'.random_int(100, 999).'-'.uniqid();
         $filepath = tempnam(sys_get_temp_dir(), $filename);
         $modelManager = new ModelManager();
         $modelManager->saveToFile($classifier, $filepath);

@@ -4,22 +4,24 @@ declare(strict_types=1);
 
 namespace Phpml\Classification\Linear;
 
+use Exception;
+
 class Adaline extends Perceptron
 {
     /**
      * Batch training is the default Adaline training algorithm
      */
-    const BATCH_TRAINING    = 1;
+    public const BATCH_TRAINING = 1;
 
     /**
      * Online training: Stochastic gradient descent learning
      */
-    const ONLINE_TRAINING    = 2;
+    public const ONLINE_TRAINING = 2;
 
     /**
      * Training type may be either 'Batch' or 'Online' learning
      *
-     * @var string
+     * @var string|int
      */
     protected $trainingType;
 
@@ -32,18 +34,16 @@ class Adaline extends Perceptron
      * If normalizeInputs is set to true, then every input given to the algorithm will be standardized
      * by use of standard deviation and mean calculation
      *
-     * @param float $learningRate
-     * @param int   $maxIterations
-     * @param bool  $normalizeInputs
-     * @param int   $trainingType
-     *
      * @throws \Exception
      */
-    public function __construct(float $learningRate = 0.001, int $maxIterations = 1000,
-        bool $normalizeInputs = true, int $trainingType = self::BATCH_TRAINING)
-    {
+    public function __construct(
+        float $learningRate = 0.001,
+        int $maxIterations = 1000,
+        bool $normalizeInputs = true,
+        int $trainingType = self::BATCH_TRAINING
+    ) {
         if (!in_array($trainingType, [self::BATCH_TRAINING, self::ONLINE_TRAINING])) {
-            throw new \Exception("Adaline can only be trained with batch and online/stochastic gradient descent algorithm");
+            throw new Exception('Adaline can only be trained with batch and online/stochastic gradient descent algorithm');
         }
 
         $this->trainingType = $trainingType;
@@ -54,9 +54,6 @@ class Adaline extends Perceptron
     /**
      * Adapts the weights with respect to given samples and targets
      * by use of gradient descent learning rule
-     *
-     * @param array $samples
-     * @param array $targets
      */
     protected function runTraining(array $samples, array $targets)
     {

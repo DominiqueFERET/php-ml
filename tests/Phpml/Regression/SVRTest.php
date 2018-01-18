@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace tests\Regression;
+namespace Phpml\Tests\Regression;
 
+use Phpml\ModelManager;
 use Phpml\Regression\SVR;
 use Phpml\SupportVectorMachine\Kernel;
-use Phpml\ModelManager;
 use PHPUnit\Framework\TestCase;
 
 class SVRTest extends TestCase
 {
-    public function testPredictSingleFeatureSamples()
+    public function testPredictSingleFeatureSamples(): void
     {
         $delta = 0.01;
 
@@ -24,7 +24,7 @@ class SVRTest extends TestCase
         $this->assertEquals(4.03, $regression->predict([64]), '', $delta);
     }
 
-    public function testPredictMultiFeaturesSamples()
+    public function testPredictMultiFeaturesSamples(): void
     {
         $delta = 0.01;
 
@@ -37,7 +37,7 @@ class SVRTest extends TestCase
         $this->assertEquals([4109.82, 4112.28], $regression->predict([[60000, 1996], [60000, 2000]]), '', $delta);
     }
 
-    public function testSaveAndRestore()
+    public function testSaveAndRestore(): void
     {
         $samples = [[60], [61], [62], [63], [65]];
         $targets = [3.1, 3.6, 3.8, 4, 4.1];
@@ -48,7 +48,7 @@ class SVRTest extends TestCase
         $testSamples = [64];
         $predicted = $regression->predict($testSamples);
 
-        $filename = 'svr-test'.rand(100, 999).'-'.uniqid();
+        $filename = 'svr-test'.random_int(100, 999).'-'.uniqid();
         $filepath = tempnam(sys_get_temp_dir(), $filename);
         $modelManager = new ModelManager();
         $modelManager->saveToFile($regression, $filepath);

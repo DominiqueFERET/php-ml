@@ -2,22 +2,23 @@
 
 declare(strict_types=1);
 
-namespace tests;
+namespace Phpml\Tests;
 
 use Phpml\Classification\SVC;
 use Phpml\FeatureExtraction\TfIdfTransformer;
 use Phpml\FeatureExtraction\TokenCountVectorizer;
+use Phpml\ModelManager;
 use Phpml\Pipeline;
 use Phpml\Preprocessing\Imputer;
-use Phpml\Preprocessing\Normalizer;
 use Phpml\Preprocessing\Imputer\Strategy\MostFrequentStrategy;
+use Phpml\Preprocessing\Normalizer;
 use Phpml\Regression\SVR;
 use Phpml\Tokenization\WordTokenizer;
 use PHPUnit\Framework\TestCase;
 
 class PipelineTest extends TestCase
 {
-    public function testPipelineConstruction()
+    public function testPipelineConstruction(): void
     {
         $transformers = [
             new TfIdfTransformer(),
@@ -30,7 +31,7 @@ class PipelineTest extends TestCase
         $this->assertEquals($estimator, $pipeline->getEstimator());
     }
 
-    public function testPipelineEstimatorSetter()
+    public function testPipelineEstimatorSetter(): void
     {
         $pipeline = new Pipeline([new TfIdfTransformer()], new SVC());
 
@@ -40,7 +41,7 @@ class PipelineTest extends TestCase
         $this->assertEquals($estimator, $pipeline->getEstimator());
     }
 
-    public function testPipelineWorkflow()
+    public function testPipelineWorkflow(): void
     {
         $transformers = [
             new Imputer(null, new MostFrequentStrategy()),
@@ -68,11 +69,11 @@ class PipelineTest extends TestCase
         $this->assertEquals(4, $predicted[0]);
     }
 
-    public function testPipelineTransformers()
+    public function testPipelineTransformers(): void
     {
         $transformers = [
             new TokenCountVectorizer(new WordTokenizer()),
-            new TfIdfTransformer()
+            new TfIdfTransformer(),
         ];
 
         $estimator = new SVC();
@@ -103,5 +104,41 @@ class PipelineTest extends TestCase
         $predicted = $pipeline->predict(['Hello Max', 'Goodbye Mark']);
 
         $this->assertEquals($expected, $predicted);
+    }
+
+    public function testSaveAndRestore(): void
+    {
+        $pipeline = new Pipeline([
+            new TokenCountVectorizer(new WordTokenizer()),
+            new TfIdfTransformer(),
+        ], new SVC());
+
+        $pipeline->train([
+            'Hello Paul',
+            'Hello Martin',
+            'Goodbye Tom',
+            'Hello John',
+            'Goodbye Alex',
+            'Bye Tony',
+        ], [
+            'greetings',
+            'greetings',
+            'farewell',
+            'greetings',
+            'farewell',
+            'farewell',
+        ]);
+
+        $testSamples = ['Hello Max', 'Goodbye Mark'];
+        $predicted = $pipeline->predict($testSamples);
+
+        $filepath = tempnam(sys_get_temp_dir(), uniqid('pipeline-test', true));
+        $modelManager = new ModelManager();
+        $modelManager->saveToFile($pipeline, $filepath);
+
+        $restoredClassifier = $modelManager->restoreFromFile($filepath);
+        $this->assertEquals($pipeline, $restoredClassifier);
+        $this->assertEquals($predicted, $restoredClassifier->predict($testSamples));
+        unlink($filepath);
     }
 }

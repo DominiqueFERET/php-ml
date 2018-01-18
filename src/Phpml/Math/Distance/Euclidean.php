@@ -10,11 +10,6 @@ use Phpml\Math\Distance;
 class Euclidean implements Distance
 {
     /**
-     * @param array $a
-     * @param array $b
-     *
-     * @return float
-     *
      * @throws InvalidArgumentException
      */
     public function distance(array $a, array $b): float
@@ -34,11 +29,6 @@ class Euclidean implements Distance
 
     /**
      * Square of Euclidean distance
-     *
-     * @param array $a
-     * @param array $b
-     *
-     * @return float
      */
     public function sqDistance(array $a, array $b): float
     {

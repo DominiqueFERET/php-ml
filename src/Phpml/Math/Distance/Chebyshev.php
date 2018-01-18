@@ -10,11 +10,6 @@ use Phpml\Math\Distance;
 class Chebyshev implements Distance
 {
     /**
-     * @param array $a
-     * @param array $b
-     *
-     * @return float
-     *
      * @throws InvalidArgumentException
      */
     public function distance(array $a, array $b): float

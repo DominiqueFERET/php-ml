@@ -2,16 +2,17 @@
 
 declare(strict_types=1);
 
-namespace tests\Phpml\NeuralNetwork\Network;
+namespace Phpml\Tests\NeuralNetwork\Network;
 
 use Phpml\NeuralNetwork\Layer;
 use Phpml\NeuralNetwork\Network\LayeredNetwork;
 use Phpml\NeuralNetwork\Node\Input;
 use PHPUnit\Framework\TestCase;
+use PHPUnit_Framework_MockObject_MockObject;
 
 class LayeredNetworkTest extends TestCase
 {
-    public function testLayersSettersAndGetters()
+    public function testLayersSettersAndGetters(): void
     {
         $network = $this->getLayeredNetworkMock();
 
@@ -21,7 +22,7 @@ class LayeredNetworkTest extends TestCase
         $this->assertEquals([$layer1, $layer2], $network->getLayers());
     }
 
-    public function testGetLastLayerAsOutputLayer()
+    public function testGetLastLayerAsOutputLayer(): void
     {
         $network = $this->getLayeredNetworkMock();
         $network->addLayer($layer1 = new Layer());
@@ -32,7 +33,7 @@ class LayeredNetworkTest extends TestCase
         $this->assertEquals($layer2, $network->getOutputLayer());
     }
 
-    public function testSetInputAndGetOutput()
+    public function testSetInputAndGetOutput(): void
     {
         $network = $this->getLayeredNetworkMock();
         $network->addLayer(new Layer(2, Input::class));
@@ -45,7 +46,7 @@ class LayeredNetworkTest extends TestCase
     }
 
     /**
-     * @return LayeredNetwork
+     * @return LayeredNetwork|PHPUnit_Framework_MockObject_MockObject
      */
     private function getLayeredNetworkMock()
     {

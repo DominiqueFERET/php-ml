@@ -2,14 +2,15 @@
 
 declare(strict_types=1);
 
-namespace test\Phpml\Math\StandardDeviation;
+namespace Phpml\Tests\Math\Statistic;
 
+use Phpml\Exception\InvalidArgumentException;
 use Phpml\Math\Statistic\StandardDeviation;
 use PHPUnit\Framework\TestCase;
 
 class StandardDeviationTest extends TestCase
 {
-    public function testStandardDeviationOfPopulationSample()
+    public function testStandardDeviationOfPopulationSample(): void
     {
         //https://pl.wikipedia.org/wiki/Odchylenie_standardowe
         $delta = 0.001;
@@ -25,19 +26,15 @@ class StandardDeviationTest extends TestCase
         $this->assertEquals(50989, StandardDeviation::population($population), '', $delta);
     }
 
-    /**
-     * @expectedException \Phpml\Exception\InvalidArgumentException
-     */
-    public function testThrowExceptionOnEmptyArrayIfNotSample()
+    public function testThrowExceptionOnEmptyArrayIfNotSample(): void
     {
+        $this->expectException(InvalidArgumentException::class);
         StandardDeviation::population([], false);
     }
 
-    /**
-     * @expectedException \Phpml\Exception\InvalidArgumentException
-     */
-    public function testThrowExceptionOnToSmallArray()
+    public function testThrowExceptionOnToSmallArray(): void
     {
+        $this->expectException(InvalidArgumentException::class);
         StandardDeviation::population([1]);
     }
 }

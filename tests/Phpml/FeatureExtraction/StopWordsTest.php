@@ -2,14 +2,15 @@
 
 declare(strict_types=1);
 
-namespace tests\Phpml\FeatureExtraction;
+namespace Phpml\Tests\FeatureExtraction;
 
+use Phpml\Exception\InvalidArgumentException;
 use Phpml\FeatureExtraction\StopWords;
 use PHPUnit\Framework\TestCase;
 
 class StopWordsTest extends TestCase
 {
-    public function testCustomStopWords()
+    public function testCustomStopWords(): void
     {
         $stopWords = new StopWords(['lorem', 'ipsum', 'dolor']);
 
@@ -22,15 +23,13 @@ class StopWordsTest extends TestCase
         $this->assertFalse($stopWords->isStopWord('amet'));
     }
 
-    /**
-     * @expectedException \Phpml\Exception\InvalidArgumentException
-     */
-    public function testThrowExceptionOnInvalidLanguage()
+    public function testThrowExceptionOnInvalidLanguage(): void
     {
+        $this->expectException(InvalidArgumentException::class);
         StopWords::factory('Lorem');
     }
 
-    public function testEnglishStopWords()
+    public function testEnglishStopWords(): void
     {
         $stopWords = StopWords::factory('English');
 
@@ -38,7 +37,7 @@ class StopWordsTest extends TestCase
         $this->assertFalse($stopWords->isStopWord('strategy'));
     }
 
-    public function testPolishStopWords()
+    public function testPolishStopWords(): void
     {
         $stopWords = StopWords::factory('Polish');
 
@@ -46,7 +45,7 @@ class StopWordsTest extends TestCase
         $this->assertFalse($stopWords->isStopWord('transhumanizm'));
     }
 
-    public function testFrenchStopWords()
+    public function testFrenchStopWords(): void
     {
         $stopWords = StopWords::factory('French');
 

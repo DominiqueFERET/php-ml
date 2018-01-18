@@ -2,22 +2,21 @@
 
 declare(strict_types=1);
 
-namespace tests\Phpml\Dataset;
+namespace Phpml\Tests\Dataset;
 
 use Phpml\Dataset\FilesDataset;
+use Phpml\Exception\DatasetException;
 use PHPUnit\Framework\TestCase;
 
 class FilesDatasetTest extends TestCase
 {
-    /**
-     * @expectedException \Phpml\Exception\DatasetException
-     */
-    public function testThrowExceptionOnMissingRootFolder()
+    public function testThrowExceptionOnMissingRootFolder(): void
     {
+        $this->expectException(DatasetException::class);
         new FilesDataset('some/not/existed/path');
     }
 
-    public function testLoadFilesDatasetWithBBCData()
+    public function testLoadFilesDatasetWithBBCData(): void
     {
         $rootPath = dirname(__FILE__).'/Resources/bbc';
 

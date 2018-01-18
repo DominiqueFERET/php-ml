@@ -9,13 +9,9 @@ use Phpml\Exception\InvalidArgumentException;
 class Mean
 {
     /**
-     * @param array $numbers
-     *
-     * @return float
-     *
      * @throws InvalidArgumentException
      */
-    public static function arithmetic(array $numbers)
+    public static function arithmetic(array $numbers): float
     {
         self::checkArrayLength($numbers);
 
@@ -23,8 +19,6 @@ class Mean
     }
 
     /**
-     * @param array $numbers
-     *
      * @return float|mixed
      *
      * @throws InvalidArgumentException
@@ -34,11 +28,11 @@ class Mean
         self::checkArrayLength($numbers);
 
         $count = count($numbers);
-        $middleIndex = (int)floor($count / 2);
+        $middleIndex = (int) floor($count / 2);
         sort($numbers, SORT_NUMERIC);
         $median = $numbers[$middleIndex];
 
-        if (0 === $count % 2) {
+        if ($count % 2 === 0) {
             $median = ($median + $numbers[$middleIndex - 1]) / 2;
         }
 
@@ -46,8 +40,6 @@ class Mean
     }
 
     /**
-     * @param array $numbers
-     *
      * @return mixed
      *
      * @throws InvalidArgumentException
@@ -62,11 +54,9 @@ class Mean
     }
 
     /**
-     * @param array $array
-     *
      * @throws InvalidArgumentException
      */
-    private static function checkArrayLength(array $array)
+    private static function checkArrayLength(array $array): void
     {
         if (empty($array)) {
             throw InvalidArgumentException::arrayCantBeEmpty();

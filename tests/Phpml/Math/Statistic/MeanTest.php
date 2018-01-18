@@ -2,22 +2,21 @@
 
 declare(strict_types=1);
 
-namespace test\Phpml\Math\StandardDeviation;
+namespace Phpml\Tests\Math\Statistic;
 
+use Phpml\Exception\InvalidArgumentException;
 use Phpml\Math\Statistic\Mean;
 use PHPUnit\Framework\TestCase;
 
 class MeanTest extends TestCase
 {
-    /**
-     * @expectedException \Phpml\Exception\InvalidArgumentException
-     */
-    public function testArithmeticThrowExceptionOnEmptyArray()
+    public function testArithmeticThrowExceptionOnEmptyArray(): void
     {
+        $this->expectException(InvalidArgumentException::class);
         Mean::arithmetic([]);
     }
 
-    public function testArithmeticMean()
+    public function testArithmeticMean(): void
     {
         $delta = 0.01;
         $this->assertEquals(3.5, Mean::arithmetic([2, 5]), '', $delta);
@@ -25,37 +24,33 @@ class MeanTest extends TestCase
         $this->assertEquals(1.7, Mean::arithmetic([0.5, 0.5, 1.5, 2.5, 3.5]), '', $delta);
     }
 
-    /**
-     * @expectedException \Phpml\Exception\InvalidArgumentException
-     */
-    public function testMedianThrowExceptionOnEmptyArray()
+    public function testMedianThrowExceptionOnEmptyArray(): void
     {
+        $this->expectException(InvalidArgumentException::class);
         Mean::median([]);
     }
 
-    public function testMedianOnOddLengthArray()
+    public function testMedianOnOddLengthArray(): void
     {
         $numbers = [5, 2, 6, 1, 3];
 
         $this->assertEquals(3, Mean::median($numbers));
     }
 
-    public function testMedianOnEvenLengthArray()
+    public function testMedianOnEvenLengthArray(): void
     {
         $numbers = [5, 2, 6, 1, 3, 4];
 
         $this->assertEquals(3.5, Mean::median($numbers));
     }
 
-    /**
-     * @expectedException \Phpml\Exception\InvalidArgumentException
-     */
-    public function testModeThrowExceptionOnEmptyArray()
+    public function testModeThrowExceptionOnEmptyArray(): void
     {
+        $this->expectException(InvalidArgumentException::class);
         Mean::mode([]);
     }
 
-    public function testModeOnArray()
+    public function testModeOnArray(): void
     {
         $numbers = [5, 2, 6, 1, 3, 4, 6, 6, 5];
 

@@ -2,23 +2,25 @@
 
 declare(strict_types=1);
 
-namespace tests\Phpml\NeuralNetwork;
+namespace Phpml\Tests\NeuralNetwork;
 
-use Phpml\NeuralNetwork\Node\Bias;
+use Phpml\Exception\InvalidArgumentException;
 use Phpml\NeuralNetwork\Layer;
+use Phpml\NeuralNetwork\Node\Bias;
 use Phpml\NeuralNetwork\Node\Neuron;
 use PHPUnit\Framework\TestCase;
+use stdClass;
 
 class LayerTest extends TestCase
 {
-    public function testLayerInitialization()
+    public function testLayerInitialization(): void
     {
         $layer = new Layer();
 
         $this->assertEquals([], $layer->getNodes());
     }
 
-    public function testLayerInitializationWithDefaultNodesType()
+    public function testLayerInitializationWithDefaultNodesType(): void
     {
         $layer = new Layer($number = 5);
 
@@ -28,7 +30,7 @@ class LayerTest extends TestCase
         }
     }
 
-    public function testLayerInitializationWithExplicitNodesType()
+    public function testLayerInitializationWithExplicitNodesType(): void
     {
         $layer = new Layer($number = 5, $class = Bias::class);
 
@@ -38,15 +40,13 @@ class LayerTest extends TestCase
         }
     }
 
-    /**
-     * @expectedException \Phpml\Exception\InvalidArgumentException
-     */
-    public function testThrowExceptionOnInvalidNodeClass()
+    public function testThrowExceptionOnInvalidNodeClass(): void
     {
-        new Layer(1, \stdClass::class);
+        $this->expectException(InvalidArgumentException::class);
+        new Layer(1, stdClass::class);
     }
 
-    public function testAddNodesToLayer()
+    public function testAddNodesToLayer(): void
     {
         $layer = new Layer();
         $layer->addNode($node1 = new Neuron());

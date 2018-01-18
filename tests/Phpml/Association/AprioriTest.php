@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-namespace tests\Classification;
+namespace Phpml\Tests\Association;
 
 use Phpml\Association\Apriori;
 use Phpml\ModelManager;
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
 
 class AprioriTest extends TestCase
 {
@@ -40,7 +41,7 @@ class AprioriTest extends TestCase
         [2, 4],
     ];
 
-    public function testGreek()
+    public function testGreek(): void
     {
         $apriori = new Apriori(0.5, 0.5);
         $apriori->train($this->sampleGreek, []);
@@ -49,14 +50,14 @@ class AprioriTest extends TestCase
         $this->assertEquals('alpha', $apriori->predict([['alpha', 'epsilon'], ['beta', 'theta']])[1][0][0]);
     }
 
-    public function testPowerSet()
+    public function testPowerSet(): void
     {
         $apriori = new Apriori();
 
         $this->assertCount(8, $this->invoke($apriori, 'powerSet', [['a', 'b', 'c']]));
     }
 
-    public function testApriori()
+    public function testApriori(): void
     {
         $apriori = new Apriori(3 / 7);
         $apriori->train($this->sampleBasket, []);
@@ -73,7 +74,7 @@ class AprioriTest extends TestCase
         $this->assertTrue($this->invoke($apriori, 'contains', [$L[2], [3, 4]]));
     }
 
-    public function testGetRules()
+    public function testGetRules(): void
     {
         $apriori = new Apriori(0.4, 0.8);
         $apriori->train($this->sampleChars, []);
@@ -81,21 +82,21 @@ class AprioriTest extends TestCase
         $this->assertCount(19, $apriori->getRules());
     }
 
-    public function testAntecedents()
+    public function testAntecedents(): void
     {
         $apriori = new Apriori();
 
         $this->assertCount(6, $this->invoke($apriori, 'antecedents', [['a', 'b', 'c']]));
     }
 
-    public function testItems()
+    public function testItems(): void
     {
         $apriori = new Apriori();
         $apriori->train($this->sampleGreek, []);
         $this->assertCount(4, $this->invoke($apriori, 'items', []));
     }
 
-    public function testFrequent()
+    public function testFrequent(): void
     {
         $apriori = new Apriori(0.51);
         $apriori->train($this->sampleGreek, []);
@@ -104,7 +105,7 @@ class AprioriTest extends TestCase
         $this->assertCount(2, $this->invoke($apriori, 'frequent', [[['alpha'], ['beta']]]));
     }
 
-    public function testCandidates()
+    public function testCandidates(): void
     {
         $apriori = new Apriori();
         $apriori->train($this->sampleGreek, []);
@@ -115,7 +116,7 @@ class AprioriTest extends TestCase
         $this->assertCount(3, $this->invoke($apriori, 'candidates', [[['alpha'], ['beta'], ['theta']]]));
     }
 
-    public function testConfidence()
+    public function testConfidence(): void
     {
         $apriori = new Apriori();
         $apriori->train($this->sampleGreek, []);
@@ -124,7 +125,7 @@ class AprioriTest extends TestCase
         $this->assertEquals(1, $this->invoke($apriori, 'confidence', [['alpha', 'beta'], ['alpha']]));
     }
 
-    public function testSupport()
+    public function testSupport(): void
     {
         $apriori = new Apriori();
         $apriori->train($this->sampleGreek, []);
@@ -133,7 +134,7 @@ class AprioriTest extends TestCase
         $this->assertEquals(0.5, $this->invoke($apriori, 'support', [['epsilon']]));
     }
 
-    public function testFrequency()
+    public function testFrequency(): void
     {
         $apriori = new Apriori();
         $apriori->train($this->sampleGreek, []);
@@ -142,7 +143,7 @@ class AprioriTest extends TestCase
         $this->assertEquals(2, $this->invoke($apriori, 'frequency', [['epsilon']]));
     }
 
-    public function testContains()
+    public function testContains(): void
     {
         $apriori = new Apriori();
 
@@ -151,7 +152,7 @@ class AprioriTest extends TestCase
         $this->assertFalse($this->invoke($apriori, 'contains', [[['a'], ['b']], ['c']]));
     }
 
-    public function testSubset()
+    public function testSubset(): void
     {
         $apriori = new Apriori();
 
@@ -160,7 +161,7 @@ class AprioriTest extends TestCase
         $this->assertFalse($this->invoke($apriori, 'subset', [['a'], ['a', 'b']]));
     }
 
-    public function testEquals()
+    public function testEquals(): void
     {
         $apriori = new Apriori();
 
@@ -172,22 +173,21 @@ class AprioriTest extends TestCase
     /**
      * Invokes objects method. Private/protected will be set accessible.
      *
-     * @param object &$object Instantiated object to be called on
-     * @param string $method  Method name to be called
-     * @param array  $params  Array of params to be passed
+     * @param string $method Method name to be called
+     * @param array  $params Array of params to be passed
      *
      * @return mixed
      */
-    public function invoke(&$object, $method, array $params = [])
+    public function invoke(&$object, string $method, array $params = [])
     {
-        $reflection = new \ReflectionClass(get_class($object));
+        $reflection = new ReflectionClass(get_class($object));
         $method = $reflection->getMethod($method);
         $method->setAccessible(true);
 
         return $method->invokeArgs($object, $params);
     }
 
-    public function testSaveAndRestore()
+    public function testSaveAndRestore(): void
     {
         $classifier = new Apriori(0.5, 0.5);
         $classifier->train($this->sampleGreek, []);
@@ -195,7 +195,7 @@ class AprioriTest extends TestCase
         $testSamples = [['alpha', 'epsilon'], ['beta', 'theta']];
         $predicted = $classifier->predict($testSamples);
 
-        $filename = 'apriori-test-'.rand(100, 999).'-'.uniqid();
+        $filename = 'apriori-test-'.random_int(100, 999).'-'.uniqid();
         $filepath = tempnam(sys_get_temp_dir(), $filename);
         $modelManager = new ModelManager();
         $modelManager->saveToFile($classifier, $filepath);

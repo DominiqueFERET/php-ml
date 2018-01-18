@@ -8,8 +8,9 @@ use Phpml\Preprocessing\Imputer\Strategy;
 
 class Imputer implements Preprocessor
 {
-    const AXIS_COLUMN = 0;
-    const AXIS_ROW = 1;
+    public const AXIS_COLUMN = 0;
+
+    public const AXIS_ROW = 1;
 
     /**
      * @var mixed
@@ -27,15 +28,12 @@ class Imputer implements Preprocessor
     private $axis;
 
     /**
-     * @var
+     * @var mixed[]
      */
-    private $samples;
+    private $samples = [];
 
     /**
-     * @param mixed      $missingValue
-     * @param Strategy   $strategy
-     * @param int        $axis
-     * @param array|null $samples
+     * @param mixed $missingValue
      */
     public function __construct($missingValue, Strategy $strategy, int $axis = self::AXIS_COLUMN, array $samples = [])
     {
@@ -45,28 +43,19 @@ class Imputer implements Preprocessor
         $this->samples = $samples;
     }
 
-    /**
-     * @param array $samples
-     */
-    public function fit(array $samples)
+    public function fit(array $samples): void
     {
         $this->samples = $samples;
     }
 
-    /**
-     * @param array $samples
-     */
-    public function transform(array &$samples)
+    public function transform(array &$samples): void
     {
         foreach ($samples as &$sample) {
             $this->preprocessSample($sample);
         }
     }
 
-    /**
-     * @param array $sample
-     */
-    private function preprocessSample(array &$sample)
+    private function preprocessSample(array &$sample): void
     {
         foreach ($sample as $column => &$value) {
             if ($value === $this->missingValue) {
@@ -75,15 +64,9 @@ class Imputer implements Preprocessor
         }
     }
 
-    /**
-     * @param int   $column
-     * @param array $currentSample
-     *
-     * @return array
-     */
     private function getAxis(int $column, array $currentSample): array
     {
-        if (self::AXIS_ROW === $this->axis) {
+        if ($this->axis === self::AXIS_ROW) {
             return array_diff($currentSample, [$this->missingValue]);
         }
 

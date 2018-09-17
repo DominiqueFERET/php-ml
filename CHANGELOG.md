@@ -4,6 +4,7 @@ CHANGELOG
 This changelog references the relevant changes done in PHP-ML library.
 
 * Unreleased
+    * feature [Dataset] changed the default kernel type in SVC to Kernel::RBF (#267)
     * feature [Clustering] added KMeans associative clustering (#262)
     * feature [Dataset] added removeColumns function to ArrayDataset (#249)
     * feature [Dataset] added a SvmDataset class for SVM-Light (or LibSVM) format files (#237)
@@ -13,6 +14,8 @@ This changelog references the relevant changes done in PHP-ML library.
     * enhancement Throw proper exception (#259, #251)
     * fix ensure DataTransformer::testSet samples array is not empty (#204)
     * fix optimizer initial theta randomization (#239)
+    * fix travis build on osx (#281)
+    * fix SVM locale (non-locale aware) (#288)
     * typo, tests, code styles and documentation fixes (#265, #261, #254, #253, #251, #250, #248, #245, #243)
 
 * 0.6.2 (2018-02-22)

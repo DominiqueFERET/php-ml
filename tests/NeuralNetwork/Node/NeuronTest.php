@@ -7,8 +7,8 @@ namespace Phpml\Tests\NeuralNetwork\Node;
 use Phpml\NeuralNetwork\ActivationFunction\BinaryStep;
 use Phpml\NeuralNetwork\Node\Neuron;
 use Phpml\NeuralNetwork\Node\Neuron\Synapse;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use PHPUnit_Framework_MockObject_MockObject;
 
 class NeuronTest extends TestCase
 {
@@ -16,19 +16,19 @@ class NeuronTest extends TestCase
     {
         $neuron = new Neuron();
 
-        $this->assertEquals([], $neuron->getSynapses());
-        $this->assertEquals(0.5, $neuron->getOutput());
+        self::assertEquals([], $neuron->getSynapses());
+        self::assertEquals(0.5, $neuron->getOutput());
     }
 
     public function testNeuronActivationFunction(): void
     {
-        /** @var BinaryStep|PHPUnit_Framework_MockObject_MockObject $activationFunction */
+        /** @var BinaryStep|MockObject $activationFunction */
         $activationFunction = $this->getMockBuilder(BinaryStep::class)->getMock();
         $activationFunction->method('compute')->with(0)->willReturn($output = 0.69);
 
         $neuron = new Neuron($activationFunction);
 
-        $this->assertEquals($output, $neuron->getOutput());
+        self::assertEquals($output, $neuron->getOutput());
     }
 
     public function testNeuronWithSynapse(): void
@@ -36,8 +36,8 @@ class NeuronTest extends TestCase
         $neuron = new Neuron();
         $neuron->addSynapse($synapse = $this->getSynapseMock());
 
-        $this->assertEquals([$synapse], $neuron->getSynapses());
-        $this->assertEquals(0.88, $neuron->getOutput(), '', 0.01);
+        self::assertEquals([$synapse], $neuron->getSynapses());
+        self::assertEqualsWithDelta(0.88, $neuron->getOutput(), 0.01);
     }
 
     public function testNeuronRefresh(): void
@@ -46,15 +46,15 @@ class NeuronTest extends TestCase
         $neuron->getOutput();
         $neuron->addSynapse($this->getSynapseMock());
 
-        $this->assertEquals(0.5, $neuron->getOutput(), '', 0.01);
+        self::assertEqualsWithDelta(0.5, $neuron->getOutput(), 0.01);
 
         $neuron->reset();
 
-        $this->assertEquals(0.88, $neuron->getOutput(), '', 0.01);
+        self::assertEqualsWithDelta(0.88, $neuron->getOutput(), 0.01);
     }
 
     /**
-     * @return Synapse|PHPUnit_Framework_MockObject_MockObject
+     * @return Synapse|MockObject
      */
     private function getSynapseMock(int $output = 2)
     {

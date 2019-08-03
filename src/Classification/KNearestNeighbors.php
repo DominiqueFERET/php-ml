@@ -11,7 +11,8 @@ use Phpml\Math\Distance\Euclidean;
 
 class KNearestNeighbors implements Classifier
 {
-    use Trainable, Predictable;
+    use Trainable;
+    use Predictable;
 
     /**
      * @var int
@@ -44,10 +45,9 @@ class KNearestNeighbors implements Classifier
     protected function predictSample(array $sample)
     {
         $distances = $this->kNeighborsDistances($sample);
+        $predictions = (array) array_combine(array_values($this->targets), array_fill(0, count($this->targets), 0));
 
-        $predictions = array_combine(array_values($this->targets), array_fill(0, count($this->targets), 0));
-
-        foreach ($distances as $index => $distance) {
+        foreach (array_keys($distances) as $index) {
             ++$predictions[$this->targets[$index]];
         }
 

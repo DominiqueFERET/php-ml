@@ -17,9 +17,9 @@ final class ANOVA
      * the same population mean. The test is applied to samples from two or
      * more groups, possibly with differing sizes.
      *
-     * @param array|array[] $samples - each row is class samples
+     * @param array[] $samples - each row is class samples
      *
-     * @return array|float[]
+     * @return float[]
      */
     public static function oneWayF(array $samples): array
     {
@@ -31,7 +31,7 @@ final class ANOVA
         $samplesPerClass = array_map(function (array $class): int {
             return count($class);
         }, $samples);
-        $allSamples = array_sum($samplesPerClass);
+        $allSamples = (int) array_sum($samplesPerClass);
         $ssAllSamples = self::sumOfSquaresPerFeature($samples);
         $sumSamples = self::sumOfFeaturesPerClass($samples);
         $squareSumSamples = self::sumOfSquares($sumSamples);
@@ -45,6 +45,10 @@ final class ANOVA
             return $s / $dfbn;
         }, $ssbn);
         $msw = array_map(function ($s) use ($dfwn) {
+            if ($dfwn === 0) {
+                return 1;
+            }
+
             return $s / $dfwn;
         }, $sswn);
 
@@ -102,7 +106,7 @@ final class ANOVA
     {
         foreach ($sums as &$row) {
             foreach ($row as &$sum) {
-                $sum = $sum ** 2;
+                $sum **= 2;
             }
         }
 

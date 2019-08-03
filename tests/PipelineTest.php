@@ -11,9 +11,9 @@ use Phpml\FeatureSelection\SelectKBest;
 use Phpml\ModelManager;
 use Phpml\Pipeline;
 use Phpml\Preprocessing\Imputer;
+use Phpml\Preprocessing\Imputer\Strategy\MeanStrategy;
 use Phpml\Preprocessing\Imputer\Strategy\MostFrequentStrategy;
 use Phpml\Preprocessing\Normalizer;
-use Phpml\Regression\SVR;
 use Phpml\Tokenization\WordTokenizer;
 use PHPUnit\Framework\TestCase;
 
@@ -28,18 +28,8 @@ class PipelineTest extends TestCase
 
         $pipeline = new Pipeline($transformers, $estimator);
 
-        $this->assertEquals($transformers, $pipeline->getTransformers());
-        $this->assertEquals($estimator, $pipeline->getEstimator());
-    }
-
-    public function testPipelineEstimatorSetter(): void
-    {
-        $pipeline = new Pipeline([new TfIdfTransformer()], new SVC());
-
-        $estimator = new SVR();
-        $pipeline->setEstimator($estimator);
-
-        $this->assertEquals($estimator, $pipeline->getEstimator());
+        self::assertEquals($transformers, $pipeline->getTransformers());
+        self::assertEquals($estimator, $pipeline->getEstimator());
     }
 
     public function testPipelineWorkflow(): void
@@ -67,7 +57,7 @@ class PipelineTest extends TestCase
 
         $predicted = $pipeline->predict([[0, 0, 0]]);
 
-        $this->assertEquals(4, $predicted[0]);
+        self::assertEquals(4, $predicted[0]);
     }
 
     public function testPipelineTransformers(): void
@@ -104,7 +94,7 @@ class PipelineTest extends TestCase
 
         $predicted = $pipeline->predict(['Hello Max', 'Goodbye Mark']);
 
-        $this->assertEquals($expected, $predicted);
+        self::assertEquals($expected, $predicted);
     }
 
     public function testPipelineTransformersWithTargets(): void
@@ -115,8 +105,31 @@ class PipelineTest extends TestCase
         $pipeline = new Pipeline([$selector = new SelectKBest(2)], new SVC());
         $pipeline->train($samples, $targets);
 
-        self::assertEquals([1.47058823, 4.0, 3.0], $selector->scores(), '', 0.00000001);
+        self::assertEqualsWithDelta([1.47058823, 4.0, 3.0], $selector->scores(), 0.00000001);
         self::assertEquals(['b'], $pipeline->predict([[1, 3, 5]]));
+    }
+
+    public function testPipelineAsTransformer(): void
+    {
+        $pipeline = new Pipeline([
+            new Imputer(null, new MeanStrategy()),
+        ]);
+
+        $trainSamples = [
+            [10, 20, 30],
+            [20, 30, 40],
+            [30, 40, 50],
+        ];
+
+        $pipeline->fit($trainSamples);
+
+        $testSamples = [
+            [null, null, null],
+        ];
+
+        $pipeline->transform($testSamples);
+
+        self::assertEquals([[20.0, 30.0, 40.0]], $testSamples);
     }
 
     public function testSaveAndRestore(): void
@@ -145,13 +158,13 @@ class PipelineTest extends TestCase
         $testSamples = ['Hello Max', 'Goodbye Mark'];
         $predicted = $pipeline->predict($testSamples);
 
-        $filepath = tempnam(sys_get_temp_dir(), uniqid('pipeline-test', true));
+        $filepath = (string) tempnam(sys_get_temp_dir(), uniqid('pipeline-test', true));
         $modelManager = new ModelManager();
         $modelManager->saveToFile($pipeline, $filepath);
 
         $restoredClassifier = $modelManager->restoreFromFile($filepath);
-        $this->assertEquals($pipeline, $restoredClassifier);
-        $this->assertEquals($predicted, $restoredClassifier->predict($testSamples));
+        self::assertEquals($pipeline, $restoredClassifier);
+        self::assertEquals($predicted, $restoredClassifier->predict($testSamples));
         unlink($filepath);
     }
 }

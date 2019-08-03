@@ -89,7 +89,7 @@ class Matrix
     /**
      * @throws MatrixException
      */
-    public function getColumnValues($column): array
+    public function getColumnValues(int $column): array
     {
         if ($column >= $this->columns) {
             throw new MatrixException('Column out of range');
@@ -125,7 +125,7 @@ class Matrix
 
     public function transpose(): self
     {
-        if ($this->rows == 1) {
+        if ($this->rows === 1) {
             $matrix = array_map(function ($el) {
                 return [$el];
             }, $this->matrix[0]);
@@ -138,7 +138,7 @@ class Matrix
 
     public function multiply(self $matrix): self
     {
-        if ($this->columns != $matrix->getRows()) {
+        if ($this->columns !== $matrix->getRows()) {
             throw new InvalidArgumentException('Inconsistent matrix supplied');
         }
 
@@ -166,6 +166,9 @@ class Matrix
         return new self($product, false);
     }
 
+    /**
+     * @param float|int $value
+     */
     public function divideByScalar($value): self
     {
         $newMatrix = [];
@@ -178,6 +181,9 @@ class Matrix
         return new self($newMatrix, false);
     }
 
+    /**
+     * @param float|int $value
+     */
     public function multiplyByScalar($value): self
     {
         $newMatrix = [];
@@ -261,11 +267,11 @@ class Matrix
         $squareSum = 0;
         for ($i = 0; $i < $this->rows; ++$i) {
             for ($j = 0; $j < $this->columns; ++$j) {
-                $squareSum += ($this->matrix[$i][$j]) ** 2;
+                $squareSum += $this->matrix[$i][$j] ** 2;
             }
         }
 
-        return sqrt($squareSum);
+        return $squareSum ** .5;
     }
 
     /**

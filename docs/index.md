@@ -1,6 +1,6 @@
 # PHP-ML - Machine Learning library for PHP
 
-[![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%207.1-8892BF.svg)](https://php.net/)
+[![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%207.2-8892BF.svg)](https://php.net/)
 [![Latest Stable Version](https://img.shields.io/packagist/v/php-ai/php-ml.svg)](https://packagist.org/packages/php-ai/php-ml)
 [![Build Status](https://travis-ci.org/php-ai/php-ml.svg?branch=master)](https://travis-ci.org/php-ai/php-ml)
 [![Documentation Status](https://readthedocs.org/projects/php-ml/badge/?version=master)](http://php-ml.readthedocs.org/)
@@ -15,7 +15,7 @@
 
 Fresh approach to Machine Learning in PHP. Algorithms, Cross Validation, Neural Network, Preprocessing, Feature Extraction and much more in one library.
 
-PHP-ML requires PHP >= 7.1.
+PHP-ML requires PHP >= 7.2.
 
 Simple example of classification:
 ```php
@@ -85,6 +85,7 @@ Example scripts are available in a separate repository [php-ai/php-ml-examples](
 * Preprocessing
     * [Normalization](machine-learning/preprocessing/normalization.md)
     * [Imputation missing values](machine-learning/preprocessing/imputation-missing-values.md)
+    * LabelEncoder
 * Feature Extraction
     * [Token Count Vectorizer](machine-learning/feature-extraction/token-count-vectorizer.md)
     * [Tf-idf Transformer](machine-learning/feature-extraction/tf-idf-transformer.md)
@@ -93,6 +94,7 @@ Example scripts are available in a separate repository [php-ai/php-ml-examples](
     * [CSV](machine-learning/datasets/csv-dataset.md)
     * [Files](machine-learning/datasets/files-dataset.md)
     * [SVM](machine-learning/datasets/svm-dataset.md)
+    * [MNIST](machine-learning/datasets/mnist-dataset.md)
     * Ready to use:
         * [Iris](machine-learning/datasets/demo/iris.md)
         * [Wine](machine-learning/datasets/demo/wine.md)

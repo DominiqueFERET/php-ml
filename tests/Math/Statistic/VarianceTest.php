@@ -14,10 +14,10 @@ final class VarianceTest extends TestCase
      */
     public function testVarianceFromInt(array $numbers, float $variance): void
     {
-        self::assertEquals($variance, Variance::population($numbers), '', 0.001);
+        self::assertEqualsWithDelta($variance, Variance::population($numbers), 0.001);
     }
 
-    public function dataProviderForPopulationVariance()
+    public function dataProviderForPopulationVariance(): array
     {
         return [
             [[0, 0, 0, 0, 0, 1], 0.138],

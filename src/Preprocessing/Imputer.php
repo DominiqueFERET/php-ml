@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Phpml\Preprocessing;
 
+use Phpml\Exception\InvalidOperationException;
 use Phpml\Preprocessing\Imputer\Strategy;
 
 class Imputer implements Preprocessor
@@ -48,8 +49,12 @@ class Imputer implements Preprocessor
         $this->samples = $samples;
     }
 
-    public function transform(array &$samples): void
+    public function transform(array &$samples, ?array &$targets = null): void
     {
+        if ($this->samples === []) {
+            throw new InvalidOperationException('Missing training samples for Imputer.');
+        }
+
         foreach ($samples as &$sample) {
             $this->preprocessSample($sample);
         }

@@ -43,7 +43,7 @@ final class SelectKBest implements Transformer
 
     public function fit(array $samples, ?array $targets = null): void
     {
-        if ($targets === null || empty($targets)) {
+        if ($targets === null || count($targets) === 0) {
             throw new InvalidArgumentException('The array has zero elements');
         }
 
@@ -56,7 +56,7 @@ final class SelectKBest implements Transformer
         $this->keepColumns = array_slice($sorted, 0, $this->k, true);
     }
 
-    public function transform(array &$samples): void
+    public function transform(array &$samples, ?array &$targets = null): void
     {
         if ($this->keepColumns === null) {
             return;

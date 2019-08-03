@@ -8,8 +8,8 @@ use Phpml\NeuralNetwork\ActivationFunction;
 use Phpml\NeuralNetwork\Layer;
 use Phpml\NeuralNetwork\Network\LayeredNetwork;
 use Phpml\NeuralNetwork\Node\Input;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use PHPUnit_Framework_MockObject_MockObject;
 
 class LayeredNetworkTest extends TestCase
 {
@@ -20,7 +20,7 @@ class LayeredNetworkTest extends TestCase
         $network->addLayer($layer1 = new Layer());
         $network->addLayer($layer2 = new Layer());
 
-        $this->assertEquals([$layer1, $layer2], $network->getLayers());
+        self::assertEquals([$layer1, $layer2], $network->getLayers());
     }
 
     public function testGetLastLayerAsOutputLayer(): void
@@ -28,10 +28,10 @@ class LayeredNetworkTest extends TestCase
         $network = $this->getLayeredNetworkMock();
         $network->addLayer($layer1 = new Layer());
 
-        $this->assertEquals($layer1, $network->getOutputLayer());
+        self::assertEquals($layer1, $network->getOutputLayer());
 
         $network->addLayer($layer2 = new Layer());
-        $this->assertEquals($layer2, $network->getOutputLayer());
+        self::assertEquals($layer2, $network->getOutputLayer());
     }
 
     public function testSetInputAndGetOutput(): void
@@ -40,10 +40,10 @@ class LayeredNetworkTest extends TestCase
         $network->addLayer(new Layer(2, Input::class));
 
         $network->setInput($input = [34, 43]);
-        $this->assertEquals($input, $network->getOutput());
+        self::assertEquals($input, $network->getOutput());
 
         $network->addLayer(new Layer(1));
-        $this->assertEquals([0.5], $network->getOutput());
+        self::assertEquals([0.5], $network->getOutput());
     }
 
     public function testSetInputAndGetOutputWithCustomActivationFunctions(): void
@@ -52,11 +52,11 @@ class LayeredNetworkTest extends TestCase
         $network->addLayer(new Layer(2, Input::class, $this->getActivationFunctionMock()));
 
         $network->setInput($input = [34, 43]);
-        $this->assertEquals($input, $network->getOutput());
+        self::assertEquals($input, $network->getOutput());
     }
 
     /**
-     * @return LayeredNetwork|PHPUnit_Framework_MockObject_MockObject
+     * @return LayeredNetwork|MockObject
      */
     private function getLayeredNetworkMock()
     {
@@ -64,7 +64,7 @@ class LayeredNetworkTest extends TestCase
     }
 
     /**
-     * @return ActivationFunction|PHPUnit_Framework_MockObject_MockObject
+     * @return ActivationFunction|MockObject
      */
     private function getActivationFunctionMock()
     {

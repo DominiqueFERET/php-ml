@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Phpml\Classification;
 
+use Phpml\Exception\InvalidArgumentException;
 use Phpml\Helper\Predictable;
 use Phpml\Helper\Trainable;
 use Phpml\Math\Statistic\Mean;
@@ -11,7 +12,8 @@ use Phpml\Math\Statistic\StandardDeviation;
 
 class NaiveBayes implements Classifier
 {
-    use Trainable, Predictable;
+    use Trainable;
+    use Predictable;
 
     public const CONTINUOS = 1;
 
@@ -136,6 +138,10 @@ class NaiveBayes implements Classifier
      */
     private function sampleProbability(array $sample, int $feature, string $label): float
     {
+        if (!isset($sample[$feature])) {
+            throw new InvalidArgumentException('Missing feature. All samples must have equal number of features');
+        }
+
         $value = $sample[$feature];
         if ($this->dataType[$label][$feature] == self::NOMINAL) {
             if (!isset($this->discreteProb[$label][$feature][$value]) ||
@@ -156,7 +162,7 @@ class NaiveBayes implements Classifier
         // scikit-learn did.
         // (See : https://github.com/scikit-learn/scikit-learn/blob/master/sklearn/naive_bayes.py)
         $pdf = -0.5 * log(2.0 * M_PI * $std * $std);
-        $pdf -= 0.5 * pow($value - $mean, 2) / ($std * $std);
+        $pdf -= 0.5 * (($value - $mean) ** 2) / ($std * $std);
 
         return $pdf;
     }

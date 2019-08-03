@@ -33,14 +33,14 @@ class KernelPCATest extends TestCase
             [-0.13128352866095], [-0.20865959471756], [-0.17531601535848], [0.4240660966961],
             [0.36351946685163], [-0.14334173054136], [0.22454914091011], [0.15035027480881], ];
 
-        $kpca = new KernelPCA(KernelPCA::KERNEL_RBF, null, 1, 15);
+        $kpca = new KernelPCA(KernelPCA::KERNEL_RBF, null, 1, 15.);
         $reducedData = $kpca->fit($data);
 
         // Due to the fact that the sign of values can be flipped
         // during the calculation of eigenValues, we have to compare
         // absolute value of the values
         array_map(function ($val1, $val2) use ($epsilon): void {
-            $this->assertEquals(abs($val1), abs($val2), '', $epsilon);
+            self::assertEqualsWithDelta(abs($val1), abs($val2), $epsilon);
         }, $transformed, $reducedData);
 
         // Fitted KernelPCA object can also transform an arbitrary sample of the
@@ -48,22 +48,24 @@ class KernelPCATest extends TestCase
         $newData = [1.25, 2.25];
         $newTransformed = [0.18956227539216];
         $newTransformed2 = $kpca->transform($newData);
-        $this->assertEquals(abs($newTransformed[0]), abs($newTransformed2[0]), '', $epsilon);
+        self::assertEqualsWithDelta(abs($newTransformed[0]), abs($newTransformed2[0]), $epsilon);
     }
 
     public function testKernelPCAThrowWhenKernelInvalid(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $kpca = new KernelPCA(0, null, 1, 15);
+        $this->expectExceptionMessage('KernelPCA can be initialized with the following kernels only: Linear, RBF, Sigmoid and Laplacian');
+        new KernelPCA(0, null, 1, 15.);
     }
 
     public function testTransformThrowWhenNotFitted(): void
     {
         $samples = [1, 0];
 
-        $kpca = new KernelPCA(KernelPCA::KERNEL_RBF, null, 1, 15);
+        $kpca = new KernelPCA(KernelPCA::KERNEL_RBF, null, 1, 15.);
 
         $this->expectException(InvalidOperationException::class);
+        $this->expectExceptionMessage('KernelPCA has not been fitted with respect to original dataset, please run KernelPCA::fit() first');
         $kpca->transform($samples);
     }
 
@@ -74,10 +76,11 @@ class KernelPCATest extends TestCase
             [1, 1],
         ];
 
-        $kpca = new KernelPCA(KernelPCA::KERNEL_RBF, null, 1, 15);
+        $kpca = new KernelPCA(KernelPCA::KERNEL_RBF, null, 1, 15.);
         $kpca->fit($samples);
 
         $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('KernelPCA::transform() accepts only one-dimensional arrays');
         $kpca->transform($samples);
     }
 }

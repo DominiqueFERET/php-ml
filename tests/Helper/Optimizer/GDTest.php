@@ -22,7 +22,7 @@ class GDTest extends TestCase
 
         $callback = function ($theta, $sample, $target) {
             $y = $theta[0] + $theta[1] * $sample[0];
-            $cost = ($y - $target) ** 2 / 2;
+            $cost = (($y - $target) ** 2) / 2;
             $grad = $y - $target;
 
             return [$cost, $grad];
@@ -32,7 +32,7 @@ class GDTest extends TestCase
 
         $theta = $optimizer->runOptimization($samples, $targets, $callback);
 
-        $this->assertEquals([-1, 2], $theta, '', 0.1);
+        self::assertEqualsWithDelta([-1, 2], $theta, 0.1);
     }
 
     public function testRunOptimization2Dim(): void
@@ -49,7 +49,7 @@ class GDTest extends TestCase
 
         $callback = function ($theta, $sample, $target) {
             $y = $theta[0] + $theta[1] * $sample[0] + $theta[2] * $sample[1];
-            $cost = ($y - $target) ** 2 / 2;
+            $cost = (($y - $target) ** 2) / 2;
             $grad = $y - $target;
 
             return [$cost, $grad];
@@ -60,6 +60,6 @@ class GDTest extends TestCase
 
         $theta = $optimizer->runOptimization($samples, $targets, $callback);
 
-        $this->assertEquals([-1, 2, -3], $theta, '', 0.1);
+        self::assertEqualsWithDelta([-1, 2, -3], $theta, 0.1);
     }
 }

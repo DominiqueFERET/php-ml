@@ -23,7 +23,7 @@ class SvmDataset extends ArrayDataset
         $samples = [];
         $targets = [];
         $maxIndex = 0;
-        while (($line = fgets($handle)) !== false) {
+        while (false !== $line = fgets($handle)) {
             [$sample, $target, $maxIndex] = self::processLine($line, $maxIndex);
             $samples[] = $sample;
             $targets[] = $target;
@@ -38,6 +38,9 @@ class SvmDataset extends ArrayDataset
         return [$samples, $targets];
     }
 
+    /**
+     * @return resource
+     */
     private static function openFile(string $filePath)
     {
         if (!file_exists($filePath)) {
@@ -94,7 +97,7 @@ class SvmDataset extends ArrayDataset
     private static function parseFeatureColumn(string $column): array
     {
         $feature = explode(':', $column, 2);
-        if (count($feature) != 2) {
+        if (count($feature) !== 2) {
             throw new DatasetException(sprintf('Invalid value "%s".', $column));
         }
 

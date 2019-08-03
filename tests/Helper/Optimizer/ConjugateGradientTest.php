@@ -23,7 +23,7 @@ class ConjugateGradientTest extends TestCase
 
         $callback = function ($theta, $sample, $target) {
             $y = $theta[0] + $theta[1] * $sample[0];
-            $cost = ($y - $target) ** 2 / 2;
+            $cost = (($y - $target) ** 2) / 2;
             $grad = $y - $target;
 
             return [$cost, $grad];
@@ -33,7 +33,7 @@ class ConjugateGradientTest extends TestCase
 
         $theta = $optimizer->runOptimization($samples, $targets, $callback);
 
-        $this->assertEquals([-1, 2], $theta, '', 0.1);
+        self::assertEqualsWithDelta([-1, 2], $theta, 0.1);
     }
 
     public function testRunOptimizationWithCustomInitialTheta(): void
@@ -49,7 +49,7 @@ class ConjugateGradientTest extends TestCase
 
         $callback = function ($theta, $sample, $target) {
             $y = $theta[0] + $theta[1] * $sample[0];
-            $cost = ($y - $target) ** 2 / 2;
+            $cost = (($y - $target) ** 2) / 2;
             $grad = $y - $target;
 
             return [$cost, $grad];
@@ -61,7 +61,7 @@ class ConjugateGradientTest extends TestCase
 
         $theta = $optimizer->runOptimization($samples, $targets, $callback);
 
-        $this->assertEquals([-1.087708, 2.212034], $theta, '', 0.000001);
+        self::assertEqualsWithDelta([-1.087708, 2.212034], $theta, 0.000001);
     }
 
     public function testRunOptimization2Dim(): void
@@ -78,7 +78,7 @@ class ConjugateGradientTest extends TestCase
 
         $callback = function ($theta, $sample, $target) {
             $y = $theta[0] + $theta[1] * $sample[0] + $theta[2] * $sample[1];
-            $cost = ($y - $target) ** 2 / 2;
+            $cost = (($y - $target) ** 2) / 2;
             $grad = $y - $target;
 
             return [$cost, $grad];
@@ -89,7 +89,7 @@ class ConjugateGradientTest extends TestCase
 
         $theta = $optimizer->runOptimization($samples, $targets, $callback);
 
-        $this->assertEquals([-1, 2, -3], $theta, '', 0.1);
+        self::assertEqualsWithDelta([-1, 2, -3], $theta, 0.1);
     }
 
     public function testThrowExceptionOnInvalidTheta(): void

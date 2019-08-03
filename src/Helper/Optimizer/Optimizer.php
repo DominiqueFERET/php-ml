@@ -37,9 +37,9 @@ abstract class Optimizer
         }
     }
 
-    public function setTheta(array $theta)
+    public function setTheta(array $theta): self
     {
-        if (count($theta) != $this->dimensions) {
+        if (count($theta) !== $this->dimensions) {
             throw new InvalidArgumentException(sprintf('Number of values in the weights array should be %s', $this->dimensions));
         }
 
@@ -48,9 +48,14 @@ abstract class Optimizer
         return $this;
     }
 
+    public function theta(): array
+    {
+        return $this->theta;
+    }
+
     /**
      * Executes the optimization with the given samples & targets
      * and returns the weights
      */
-    abstract public function runOptimization(array $samples, array $targets, Closure $gradientCb);
+    abstract public function runOptimization(array $samples, array $targets, Closure $gradientCb): array;
 }

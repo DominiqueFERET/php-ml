@@ -46,11 +46,11 @@ class TokenCountVectorizer implements Transformer
         $this->buildVocabulary($samples);
     }
 
-    public function transform(array &$samples): void
+    public function transform(array &$samples, ?array &$targets = null): void
     {
-        foreach ($samples as &$sample) {
+        array_walk($samples, function (string &$sample): void {
             $this->transformSample($sample);
-        }
+        });
 
         $this->checkDocumentFrequency($samples);
     }
@@ -62,7 +62,7 @@ class TokenCountVectorizer implements Transformer
 
     private function buildVocabulary(array &$samples): void
     {
-        foreach ($samples as $index => $sample) {
+        foreach ($samples as $sample) {
             $tokens = $this->tokenizer->tokenize($sample);
             foreach ($tokens as $token) {
                 $this->addTokenToVocabulary($token);
@@ -157,7 +157,7 @@ class TokenCountVectorizer implements Transformer
         $indexes = [];
         foreach ($this->frequencies as $token => $frequency) {
             if (($frequency / $samplesCount) < $this->minDF) {
-                $indexes[] = $this->getTokenIndex($token);
+                $indexes[] = $this->getTokenIndex((string) $token);
             }
         }
 

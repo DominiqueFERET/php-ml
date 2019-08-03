@@ -9,15 +9,14 @@ use Phpml\Exception\InvalidArgumentException;
 class StandardDeviation
 {
     /**
-     * @param array|float[]|int[] $numbers
+     * @param float[]|int[] $numbers
      */
     public static function population(array $numbers, bool $sample = true): float
     {
-        if (empty($numbers)) {
+        $n = count($numbers);
+        if ($n === 0) {
             throw new InvalidArgumentException('The array has zero elements');
         }
-
-        $n = count($numbers);
 
         if ($sample && $n === 1) {
             throw new InvalidArgumentException('The array must have at least 2 elements');
@@ -33,18 +32,18 @@ class StandardDeviation
             --$n;
         }
 
-        return sqrt((float) ($carry / $n));
+        return ($carry / $n) ** .5;
     }
 
     /**
      * Sum of squares deviations
      * ∑⟮xᵢ - μ⟯²
      *
-     * @param array|float[]|int[] $numbers
+     * @param float[]|int[] $numbers
      */
     public static function sumOfSquares(array $numbers): float
     {
-        if (empty($numbers)) {
+        if (count($numbers) === 0) {
             throw new InvalidArgumentException('The array has zero elements');
         }
 

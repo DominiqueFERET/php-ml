@@ -16,9 +16,9 @@ class RandomForest extends Bagging
     protected $featureSubsetRatio = 'log';
 
     /**
-     * @var array
+     * @var array|null
      */
-    protected $columnNames = null;
+    protected $columnNames;
 
     /**
      * Initializes RandomForest with the given number of trees. More trees
@@ -41,7 +41,7 @@ class RandomForest extends Bagging
      * Default value for the ratio is 'log' which results in log(numFeatures, 2) + 1
      * features to be taken into consideration while selecting subspace of features
      *
-     * @param string|float $ratio
+     * @param mixed $ratio
      */
     public function setFeatureSubsetRatio($ratio): self
     {
@@ -53,7 +53,7 @@ class RandomForest extends Bagging
             throw new InvalidArgumentException('When a float is given, feature subset ratio should be between 0.1 and 1.0');
         }
 
-        if (is_string($ratio) && $ratio != 'sqrt' && $ratio != 'log') {
+        if (is_string($ratio) && $ratio !== 'sqrt' && $ratio !== 'log') {
             throw new InvalidArgumentException("When a string is given, feature subset ratio can only be 'sqrt' or 'log'");
         }
 
@@ -69,11 +69,13 @@ class RandomForest extends Bagging
      */
     public function setClassifer(string $classifier, array $classifierOptions = [])
     {
-        if ($classifier != DecisionTree::class) {
+        if ($classifier !== DecisionTree::class) {
             throw new InvalidArgumentException('RandomForest can only use DecisionTree as base classifier');
         }
 
-        return parent::setClassifer($classifier, $classifierOptions);
+        parent::setClassifer($classifier, $classifierOptions);
+
+        return $this;
     }
 
     /**
@@ -86,7 +88,7 @@ class RandomForest extends Bagging
         // Traverse each tree and sum importance of the columns
         $sum = [];
         foreach ($this->classifiers as $tree) {
-            /* @var $tree DecisionTree */
+            /** @var DecisionTree $tree */
             $importances = $tree->getFeatureImportances();
 
             foreach ($importances as $column => $importance) {
@@ -100,10 +102,9 @@ class RandomForest extends Bagging
 
         // Normalize & sort the importance values
         $total = array_sum($sum);
-        foreach ($sum as &$importance) {
+        array_walk($sum, function (&$importance) use ($total): void {
             $importance /= $total;
-        }
-
+        });
         arsort($sum);
 
         return $sum;
@@ -123,16 +124,20 @@ class RandomForest extends Bagging
     }
 
     /**
-     * @param DecisionTree $classifier
-     *
      * @return DecisionTree
      */
     protected function initSingleClassifier(Classifier $classifier): Classifier
     {
+        if (!$classifier instanceof DecisionTree) {
+            throw new InvalidArgumentException(
+                sprintf('Classifier %s expected, got %s', DecisionTree::class, get_class($classifier))
+            );
+        }
+
         if (is_float($this->featureSubsetRatio)) {
             $featureCount = (int) ($this->featureSubsetRatio * $this->featureCount);
-        } elseif ($this->featureSubsetRatio == 'sqrt') {
-            $featureCount = (int) sqrt($this->featureCount) + 1;
+        } elseif ($this->featureSubsetRatio === 'sqrt') {
+            $featureCount = (int) ($this->featureCount ** .5) + 1;
         } else {
             $featureCount = (int) log($this->featureCount, 2) + 1;
         }

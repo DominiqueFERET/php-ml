@@ -59,14 +59,24 @@ abstract class MultilayerPerceptron extends LayeredNetwork implements Estimator,
     /**
      * @throws InvalidArgumentException
      */
-    public function __construct(int $inputLayerFeatures, array $hiddenLayers, array $classes, int $iterations = 10000, ?ActivationFunction $activationFunction = null, float $learningRate = 1)
-    {
-        if (empty($hiddenLayers)) {
+    public function __construct(
+        int $inputLayerFeatures,
+        array $hiddenLayers,
+        array $classes,
+        int $iterations = 10000,
+        ?ActivationFunction $activationFunction = null,
+        float $learningRate = 1.
+    ) {
+        if (count($hiddenLayers) === 0) {
             throw new InvalidArgumentException('Provide at least 1 hidden layer');
         }
 
         if (count($classes) < 2) {
             throw new InvalidArgumentException('Provide at least 2 different classes');
+        }
+
+        if (count($classes) !== count(array_unique($classes))) {
+            throw new InvalidArgumentException('Classes must be unique');
         }
 
         $this->classes = array_values($classes);
@@ -91,7 +101,7 @@ abstract class MultilayerPerceptron extends LayeredNetwork implements Estimator,
      */
     public function partialTrain(array $samples, array $targets, array $classes = []): void
     {
-        if (!empty($classes) && array_values($classes) !== $this->classes) {
+        if (count($classes) > 0 && array_values($classes) !== $this->classes) {
             // We require the list of classes in the constructor.
             throw new InvalidArgumentException(
                 'The provided classes don\'t match the classes provided in the constructor'
@@ -109,10 +119,30 @@ abstract class MultilayerPerceptron extends LayeredNetwork implements Estimator,
         $this->backpropagation->setLearningRate($this->learningRate);
     }
 
+    public function getOutput(): array
+    {
+        $result = [];
+        foreach ($this->getOutputLayer()->getNodes() as $i => $neuron) {
+            $result[$this->classes[$i]] = $neuron->getOutput();
+        }
+
+        return $result;
+    }
+
+    public function getLearningRate(): float
+    {
+        return $this->learningRate;
+    }
+
+    public function getBackpropagation(): Backpropagation
+    {
+        return $this->backpropagation;
+    }
+
     /**
      * @param mixed $target
      */
-    abstract protected function trainSample(array $sample, $target);
+    abstract protected function trainSample(array $sample, $target): void;
 
     /**
      * @return mixed

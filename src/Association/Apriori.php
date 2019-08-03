@@ -9,7 +9,8 @@ use Phpml\Helper\Trainable;
 
 class Apriori implements Associator
 {
-    use Trainable, Predictable;
+    use Trainable;
+    use Predictable;
 
     public const ARRAY_KEY_ANTECEDENT = 'antecedent';
 
@@ -63,11 +64,11 @@ class Apriori implements Associator
      */
     public function getRules(): array
     {
-        if (empty($this->large)) {
+        if (count($this->large) === 0) {
             $this->large = $this->apriori();
         }
 
-        if (!empty($this->rules)) {
+        if (count($this->rules) > 0) {
             return $this->rules;
         }
 
@@ -88,7 +89,7 @@ class Apriori implements Associator
         $L = [];
 
         $items = $this->frequent($this->items());
-        for ($k = 1; !empty($items); ++$k) {
+        for ($k = 1; isset($items[0]); ++$k) {
             $L[$k] = $items;
             $items = $this->frequent($this->candidates($items));
         }
@@ -117,7 +118,7 @@ class Apriori implements Associator
      */
     private function generateAllRules(): void
     {
-        for ($k = 2; !empty($this->large[$k]); ++$k) {
+        for ($k = 2; isset($this->large[$k]); ++$k) {
             foreach ($this->large[$k] as $frequent) {
                 $this->generateRules($frequent);
             }
@@ -240,7 +241,7 @@ class Apriori implements Associator
                     continue;
                 }
 
-                foreach ((array) $this->samples as $sample) {
+                foreach ($this->samples as $sample) {
                     if ($this->subset($sample, $candidate)) {
                         $candidates[] = $candidate;
 
@@ -315,7 +316,7 @@ class Apriori implements Associator
      */
     private function subset(array $set, array $subset): bool
     {
-        return !array_diff($subset, array_intersect($subset, $set));
+        return count(array_diff($subset, array_intersect($subset, $set))) === 0;
     }
 
     /**

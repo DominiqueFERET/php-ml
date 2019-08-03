@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Phpml\Tests\Preprocessing;
 
+use Phpml\Exception\InvalidOperationException;
 use Phpml\Preprocessing\Imputer;
 use Phpml\Preprocessing\Imputer\Strategy\MeanStrategy;
 use Phpml\Preprocessing\Imputer\Strategy\MedianStrategy;
@@ -31,7 +32,7 @@ class ImputerTest extends TestCase
         $imputer = new Imputer(null, new MeanStrategy(), Imputer::AXIS_COLUMN, $data);
         $imputer->transform($data);
 
-        $this->assertEquals($imputeData, $data, '', $delta = 0.01);
+        self::assertEqualsWithDelta($imputeData, $data, $delta = 0.01);
     }
 
     public function testComplementsMissingValuesWithMeanStrategyOnRowAxis(): void
@@ -53,7 +54,7 @@ class ImputerTest extends TestCase
         $imputer = new Imputer(null, new MeanStrategy(), Imputer::AXIS_ROW, $data);
         $imputer->transform($data);
 
-        $this->assertEquals($imputeData, $data, '', $delta = 0.01);
+        self::assertEqualsWithDelta($imputeData, $data, $delta = 0.01);
     }
 
     public function testComplementsMissingValuesWithMediaStrategyOnColumnAxis(): void
@@ -75,7 +76,7 @@ class ImputerTest extends TestCase
         $imputer = new Imputer(null, new MedianStrategy(), Imputer::AXIS_COLUMN, $data);
         $imputer->transform($data);
 
-        $this->assertEquals($imputeData, $data, '', $delta = 0.01);
+        self::assertEqualsWithDelta($imputeData, $data, $delta = 0.01);
     }
 
     public function testComplementsMissingValuesWithMediaStrategyOnRowAxis(): void
@@ -97,7 +98,7 @@ class ImputerTest extends TestCase
         $imputer = new Imputer(null, new MedianStrategy(), Imputer::AXIS_ROW, $data);
         $imputer->transform($data);
 
-        $this->assertEquals($imputeData, $data, '', $delta = 0.01);
+        self::assertEqualsWithDelta($imputeData, $data, $delta = 0.01);
     }
 
     public function testComplementsMissingValuesWithMostFrequentStrategyOnColumnAxis(): void
@@ -121,7 +122,7 @@ class ImputerTest extends TestCase
         $imputer = new Imputer(null, new MostFrequentStrategy(), Imputer::AXIS_COLUMN, $data);
         $imputer->transform($data);
 
-        $this->assertEquals($imputeData, $data);
+        self::assertEquals($imputeData, $data);
     }
 
     public function testComplementsMissingValuesWithMostFrequentStrategyOnRowAxis(): void
@@ -145,7 +146,7 @@ class ImputerTest extends TestCase
         $imputer = new Imputer(null, new MostFrequentStrategy(), Imputer::AXIS_ROW, $data);
         $imputer->transform($data);
 
-        $this->assertEquals($imputeData, $data);
+        self::assertEquals($imputeData, $data);
     }
 
     public function testImputerWorksOnFitSamples(): void
@@ -171,6 +172,20 @@ class ImputerTest extends TestCase
         $imputer = new Imputer(null, new MeanStrategy(), Imputer::AXIS_COLUMN, $trainData);
         $imputer->transform($data);
 
-        $this->assertEquals($imputeData, $data, '', $delta = 0.01);
+        self::assertEqualsWithDelta($imputeData, $data, $delta = 0.01);
+    }
+
+    public function testThrowExceptionWhenTryingToTransformWithoutTrainSamples(): void
+    {
+        $this->expectException(InvalidOperationException::class);
+
+        $data = [
+            [1, 3, null],
+            [6, null, 8],
+            [null, 7, 5],
+        ];
+
+        $imputer = new Imputer(null, new MeanStrategy(), Imputer::AXIS_COLUMN);
+        $imputer->transform($data);
     }
 }

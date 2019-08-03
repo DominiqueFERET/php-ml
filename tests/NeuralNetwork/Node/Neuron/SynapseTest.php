@@ -6,8 +6,8 @@ namespace Phpml\Tests\NeuralNetwork\Node\Neuron;
 
 use Phpml\NeuralNetwork\Node\Neuron;
 use Phpml\NeuralNetwork\Node\Neuron\Synapse;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use PHPUnit_Framework_MockObject_MockObject;
 
 class SynapseTest extends TestCase
 {
@@ -17,13 +17,14 @@ class SynapseTest extends TestCase
 
         $synapse = new Synapse($node, $weight = 0.75);
 
-        $this->assertEquals($node, $synapse->getNode());
-        $this->assertEquals($weight, $synapse->getWeight());
-        $this->assertEquals($weight * $nodeOutput, $synapse->getOutput());
+        self::assertEquals($node, $synapse->getNode());
+        self::assertEquals($weight, $synapse->getWeight());
+        self::assertEquals($weight * $nodeOutput, $synapse->getOutput());
 
         $synapse = new Synapse($node);
+        $weight = $synapse->getWeight();
 
-        $this->assertInternalType('float', $synapse->getWeight());
+        self::assertTrue($weight === -1. || $weight === 1.);
     }
 
     public function testSynapseWeightChange(): void
@@ -32,17 +33,17 @@ class SynapseTest extends TestCase
         $synapse = new Synapse($node, $weight = 0.75);
         $synapse->changeWeight(1.0);
 
-        $this->assertEquals(1.75, $synapse->getWeight());
+        self::assertEquals(1.75, $synapse->getWeight());
 
         $synapse->changeWeight(-2.0);
 
-        $this->assertEquals(-0.25, $synapse->getWeight());
+        self::assertEquals(-0.25, $synapse->getWeight());
     }
 
     /**
      * @param int|float $output
      *
-     * @return Neuron|PHPUnit_Framework_MockObject_MockObject
+     * @return Neuron|MockObject
      */
     private function getNodeMock($output = 1)
     {

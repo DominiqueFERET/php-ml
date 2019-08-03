@@ -115,12 +115,12 @@ class PCA extends EigenTransformerBase
      */
     protected function normalize(array $data, int $n): array
     {
-        if (empty($this->means)) {
+        if (count($this->means) === 0) {
             $this->calculateMeans($data, $n);
         }
 
         // Normalize data
-        foreach ($data as $i => $row) {
+        foreach (array_keys($data) as $i) {
             for ($k = 0; $k < $n; ++$k) {
                 $data[$i][$k] -= $this->means[$k];
             }

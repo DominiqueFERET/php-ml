@@ -18,7 +18,7 @@ class FuzzyCMeans implements Clusterer
     private $clustersNumber;
 
     /**
-     * @var array|Cluster[]
+     * @var Cluster[]
      */
     private $clusters = [];
 
@@ -28,7 +28,7 @@ class FuzzyCMeans implements Clusterer
     private $space;
 
     /**
-     * @var array|float[][]
+     * @var float[][]
      */
     private $membership = [];
 
@@ -77,9 +77,6 @@ class FuzzyCMeans implements Clusterer
         return $this->membership;
     }
 
-    /**
-     * @param Point[]|int[][] $samples
-     */
     public function cluster(array $samples): array
     {
         // Initialize variables, clusters and membership matrix
@@ -108,8 +105,7 @@ class FuzzyCMeans implements Clusterer
             $column = array_column($this->membership, $k);
             arsort($column);
             reset($column);
-            $i = key($column);
-            $cluster = $this->clusters[$i];
+            $cluster = $this->clusters[key($column)];
             $cluster->attach(new Point($this->samples[$k]));
         }
 
@@ -152,7 +148,7 @@ class FuzzyCMeans implements Clusterer
     protected function updateClusters(): void
     {
         $dim = $this->space->getDimension();
-        if (empty($this->clusters)) {
+        if (count($this->clusters) === 0) {
             for ($i = 0; $i < $this->clustersNumber; ++$i) {
                 $this->clusters[] = new Cluster($this->space, array_fill(0, $dim, 0.0));
             }
@@ -171,11 +167,11 @@ class FuzzyCMeans implements Clusterer
         }
     }
 
-    protected function getMembershipRowTotal(int $row, int $col, bool $multiply)
+    protected function getMembershipRowTotal(int $row, int $col, bool $multiply): float
     {
         $sum = 0.0;
         for ($k = 0; $k < $this->sampleCount; ++$k) {
-            $val = pow($this->membership[$row][$k], $this->fuzziness);
+            $val = $this->membership[$row][$k] ** $this->fuzziness;
             if ($multiply) {
                 $val *= $this->samples[$k][$col];
             }
@@ -211,7 +207,7 @@ class FuzzyCMeans implements Clusterer
                 $this->samples[$col]
             );
 
-            $val = pow($dist1 / $dist2, 2.0 / ($this->fuzziness - 1));
+            $val = (($dist1 / $dist2) ** 2.0) / ($this->fuzziness - 1);
             $sum += $val;
         }
 
@@ -223,7 +219,7 @@ class FuzzyCMeans implements Clusterer
      * and all cluster centers. This method returns the summation of all
      * these distances
      */
-    protected function getObjective()
+    protected function getObjective(): float
     {
         $sum = 0.0;
         $distance = new Euclidean();

@@ -44,7 +44,7 @@ To find out how to use PHP-ML follow [Documentation](http://php-ml.readthedocs.o
 
 ## Installation
 
-Currently this library is in the process of developing, but You can install it with Composer:
+This library is still in beta. However, it can be installed with Composer:
 
 ```
 composer require php-ai/php-ml
@@ -56,7 +56,7 @@ Example scripts are available in a separate repository [php-ai/php-ml-examples](
 
 ## Features
 
-* Association rule Lerning
+* Association rule Learning
     * [Apriori](machine-learning/association/apriori.md)
 * Classification
     * [SVC](machine-learning/classification/svc.md)
@@ -108,18 +108,5 @@ Example scripts are available in a separate repository [php-ai/php-ml-examples](
     * [Statistic](math/statistic.md)
 
 
-## Contribute
-
-- Guide: [CONTRIBUTING.md](https://github.com/php-ai/php-ml/blob/master/CONTRIBUTING.md)
-- Issue Tracker: [github.com/php-ai/php-ml/issues](https://github.com/php-ai/php-ml/issues)
-- Source Code: [github.com/php-ai/php-ml](https://github.com/php-ai/php-ml)
-
-You can find more about contributing in [CONTRIBUTING.md](../CONTRIBUTING.md).
-
-## License
-
-PHP-ML is released under the MIT Licence. See the bundled LICENSE file for details.
-
-## Author
-
+## 
 Arkadiusz Kondas (@ArkadiuszKondas)
